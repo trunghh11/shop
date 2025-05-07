@@ -124,7 +124,7 @@ export default function MyPosts() {
                 <p
                   className={`text-sm font-medium mt-2 ${
                     product.postStatus === 'Đang xét duyệt' ? 'text-yellow-500' :
-                    product.postStatus === 'Đã duyệt' ? 'text-green-500' :
+                    product.postStatus === 'Đã phê duyệt' ? 'text-green-500' :
                     'text-red-500'
                   }`}
                 >

@@ -62,7 +62,7 @@ function PostProduct() {
         CreatedAt: new Date(),
         PosterID: user.uid,
         ReviewerID: null,
-        Status: 'Pending',
+        Status: 'Đang xét duyệt',
       };
 
       const postsCol = collection(db, 'post');
