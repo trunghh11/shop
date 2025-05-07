@@ -2,14 +2,6 @@ import React, { Fragment, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, Transition } from '@headlessui/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  HomeIcon,
-  TagIcon,
-  InformationCircleIcon,
-  PhoneIcon,
-  UserCircleIcon,
-  ShoppingBagIcon
-} from '@heroicons/react/24/outline';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../firebase/config';
 import { signOut } from 'firebase/auth';
@@ -77,11 +69,13 @@ export default function Navbar() {
   };
 
   const navigation = [
-    { name: 'Home', href: '/', icon: HomeIcon },
-    { name: 'Products', href: '/products', icon: TagIcon },
-    { name: 'About', href: '/about', icon: InformationCircleIcon },
-    { name: 'Contact', href: '/contact', icon: PhoneIcon },
+    { name: 'Home', href: '/' },
+    { name: 'Products', href: '/products' },
+    { name: 'Fund', href: '/fund-home-page' },
+    { name: 'About', href: '/about' },
+    { name: 'Contact', href: '/contact' },
   ];
+  
 
   const navbarVariants = {
     hidden: { 
@@ -195,7 +189,6 @@ export default function Navbar() {
                       'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200'
                     )}
                   >
-                    <item.icon className="h-5 w-5 mr-1.5" />
                     {item.name}
                     {location.pathname === item.href && (
                       <motion.div
@@ -221,7 +214,6 @@ export default function Navbar() {
                       to="/cart"
                       className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
                     >
-                      <ShoppingBagIcon className="h-6 w-6" />
                       <AnimatePresence>
                         {cartItemCount > 0 && (
                           <motion.span
@@ -275,7 +267,6 @@ export default function Navbar() {
                                   'flex items-center px-4 py-2 text-sm text-gray-700'
                                 )}
                               >
-                                <UserCircleIcon className="mr-3 h-5 w-5 text-gray-400" />
                                 My Account
                               </Link>
                             )}
@@ -382,7 +373,6 @@ export default function Navbar() {
                       )}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <item.icon className="h-5 w-5 mr-3" />
                       {item.name}
                     </Link>
                   </motion.div>
@@ -403,7 +393,6 @@ export default function Navbar() {
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
                         <div className="flex items-center relative">
-                          <ShoppingBagIcon className="h-5 w-5 mr-3" />
                           Cart
                           {cartItemCount > 0 && (
                             <span className="absolute top-1 left-4 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
@@ -426,7 +415,6 @@ export default function Navbar() {
                         className="flex items-center px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
-                        <UserCircleIcon className="h-5 w-5 mr-3" />
                         My Account
                       </Link>
                     </motion.div>
