@@ -37,7 +37,11 @@ service cloud.firestore {
    match /post/{postId} {
       allow read: if request.auth != null; // Allow all authenticated users to view posts
       allow create: if request.auth != null && request.auth.uid == request.resource.data.PosterID; // Allow users to create posts
-      allow delete: if request.auth != null && request.auth.uid == resource.data.PosterID; // Allow users to update/delete their own posts
+      allow update: if request.auth != null && (
+        request.auth.uid == resource.data.PosterID || // Allow users to update their own posts
+        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin' // Allow admins to update posts
+      );
+      allow delete: if request.auth != null && request.auth.uid == resource.data.PosterID; // Allow users to delete their own posts
    }
 
  }
