@@ -4,7 +4,6 @@ import Navbar from "./components/Navbar";
 import { ToastContainer } from "react-toastify";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
-import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
@@ -24,7 +23,9 @@ import { useDispatch } from "react-redux";
 import { setUser, clearUser } from "./redux/userSlice";
 import "react-toastify/dist/ReactToastify.css";
 import PasswordReset from './pages/PasswordReset'; 
-
+import PostProduct from './pages/PostProduct';
+import MyPosts from './pages/MyPosts';
+import UserProfile from './pages/UserProfile';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -78,10 +79,12 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/checkout" element={<UnifiedCheckout />} />
-            <Route path="/about" element={<AboutUs />} />
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/post-product" element={<PostProduct />} />
+            <Route path="/myposts" element={<MyPosts />} />
+            <Route path="/user/:userId" element={<UserProfile />} />
           </Routes>
         </main>
         <Footer />

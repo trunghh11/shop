@@ -1,46 +1,73 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../firebase/config';
 import { doc, getDoc, collection, query, where, getDocs, limit } from 'firebase/firestore';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../redux/cartSlice';
 import { toast, ToastContainer } from 'react-toastify';
-import { Truck, ShieldCheck, ArrowLeft, Package2, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Package2, ShoppingCart } from 'lucide-react';
 import 'react-toastify/dist/ReactToastify.css';
 
 function ProductView() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [post, setPost] = useState(null);
+  const [poster, setPoster] = useState(null); // Add state for poster information
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(null);
   const [similarProducts, setSimilarProducts] = useState([]);
   const [loadingSimilar, setLoadingSimilar] = useState(true);
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user?.currentUser);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProduct = async () => {
+    // Redirect to sign-in page if user is not authenticated
+    if (!user) {
+      toast.warn('You must be logged in to see this contents.');
+      navigate('/signin');
+      return;
+    }
+
+    const fetchProductAndPost = async () => {
       try {
-        const docRef = doc(db, "products", id);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const productData = { id: docSnap.id, ...docSnap.data() };
+        const productDocRef = doc(db, "products", id);
+        const productDocSnap = await getDoc(productDocRef);
+
+        if (productDocSnap.exists()) {
+          const productData = { id: productDocSnap.id, ...productDocSnap.data() };
           setProduct(productData);
           setActiveImage(productData.image);
-          
-          // After fetching the product, fetch similar products
+
+          // Fetch the associated post using PostID
+          const postDocRef = doc(db, "post", productData.PostID);
+          const postDocSnap = await getDoc(postDocRef);
+
+          if (postDocSnap.exists()) {
+            const postData = postDocSnap.data();
+            setPost(postData);
+
+            // Fetch the poster's information
+            const posterDocRef = doc(db, "users", postData.PosterID);
+            const posterDocSnap = await getDoc(posterDocRef);
+            if (posterDocSnap.exists()) {
+              setPoster(posterDocSnap.data());
+            }
+          }
+
+          // Fetch similar products
           await fetchSimilarProducts(productData);
         } else {
           toast.error("Product not found!");
         }
       } catch (error) {
-        console.error("Error fetching product:", error);
-        toast.error("An error occurred while fetching the product.");
+        console.error("Error fetching product, post, or poster:", error);
+        toast.error("An error occurred while fetching the product or post.");
       } finally {
         setLoading(false);
       }
     };
-    
+
     /**
      * Fetches products that are similar to the current product based on category or brand
      * @param {Object} currentProduct - The product to find similar products for
@@ -48,21 +75,21 @@ function ProductView() {
     const fetchSimilarProducts = async (currentProduct) => {
       try {
         setLoadingSimilar(true);
-        
+
         // Query products with the same category/type
         const productsRef = collection(db, "products");
         const typeQuery = query(
-          productsRef, 
+          productsRef,
           where("type", "==", currentProduct.type),
           limit(5)
         );
-        
+
         const querySnapshot = await getDocs(typeQuery);
         const similarProductsData = querySnapshot.docs
           .map(doc => ({ id: doc.id, ...doc.data() }))
           // Filter out the current product
           .filter(prod => prod.id !== currentProduct.id);
-          
+
         setSimilarProducts(similarProductsData);
       } catch (error) {
         console.error("Error fetching similar products:", error);
@@ -70,18 +97,9 @@ function ProductView() {
         setLoadingSimilar(false);
       }
     };
-    
-    fetchProduct();
-  }, [id]);
 
-  const handleAddToCart = () => {
-    if (!user) {
-      toast.error("You must be logged in to add items to your cart.");
-      return;
-    }
-    dispatch(addToCart({ productId: product.id, quantity: 1 }));
-    toast.success("Product added to cart!");
-  };
+    fetchProductAndPost();
+  }, [id, user, navigate]);
 
   /**
    * Handles adding a similar product to cart
@@ -99,14 +117,12 @@ function ProductView() {
   };
 
   const formatPrice = (price) => {
-    const priceStr = price.toString();
-    const [integerPart, decimalPart] = priceStr.split('.');
-
-    const lastThreeDigits = integerPart.slice(-3);
-    const otherDigits = integerPart.slice(0, -3);
-    const formattedInteger = otherDigits.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + (otherDigits ? "," : "") + lastThreeDigits;
-
-    return decimalPart ? `${formattedInteger}.${decimalPart}` : formattedInteger;
+    if (!price || isNaN(price)) return '0 ₫'; // Handle undefined, null, or invalid price
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      minimumFractionDigits: 0,
+    }).format(price);
   };
 
   const handleImageClick = (image) => {
@@ -133,18 +149,63 @@ function ProductView() {
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="container mx-auto px-4 py-8">
-        <Link to="/products" className="inline-flex items-center text-blue-600 hover:underline mb-6">
+        <button
+          onClick={() => window.history.back()}
+          className="inline-flex items-center text-blue-600 hover:underline mb-6"
+        >
           <ArrowLeft size={20} className="mr-2" />
-          Back to Products
-        </Link>
+          Back
+        </button>
         <div className="bg-white shadow-xl rounded-lg overflow-hidden mb-12">
+          <div className="p-6">
+            {/* Poster Information */}
+            {poster && post && (
+              <div className="flex items-center mb-6">
+                <img
+                  src={poster.avatar || 'https://img.freepik.com/vecteurs-premium/icones-utilisateur-comprend-icones-utilisateur-symboles-icones-personnes-elements-conception-graphique-qualite-superieure_981536-526.jpg?semt=ais_hybrid&w=740'}
+                  alt={poster.FullName}
+                  className="w-12 h-12 rounded-full object-cover mr-4"
+                />
+                <div>
+                  <Link
+                    to={`/user/${post.PosterID}`}
+                    className="text-lg font-semibold text-blue-600 hover:underline"
+                  >
+                    {poster.FullName}
+                  </Link>
+                  <p className="text-sm text-gray-500">
+                    Posted on {new Date(post.CreatedAt.seconds * 1000).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Product Details */}
+            <h1 className="text-4xl font-bold mb-4 text-gray-900">{product.ProductName}</h1>
+            <p className="text-gray-700 mb-4">
+              <strong>Post Content:</strong> {post?.Content}
+            </p>
+            <p className="text-gray-700 mb-4">
+              <strong>Condition:</strong> {product.Condition}
+            </p>
+            <p className="text-gray-700 mb-4">
+              <strong>Description:</strong> {product.Description}
+            </p>
+            <p className="text-gray-700 mb-4">
+              <strong>Price:</strong> {formatPrice(product.Price)}
+            </p>
+            <p className="text-gray-700 mb-4">
+              <strong>Stock:</strong> {product.Stock}
+            </p>
+          </div>
+
+          {/* Product Images Section */}
           <div className="flex flex-col lg:flex-row">
-            {/* Product Images Section */}
             <div className="lg:w-1/2 p-4">
               <div className="border rounded-lg overflow-hidden">
                 <img
                   src={activeImage}
-                  alt={product.name}
+                  alt={product.ProductName}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -173,47 +234,6 @@ function ProductView() {
                     className={`w-20 h-20 object-cover rounded-lg cursor-pointer border ${activeImage === product.image3 ? 'border-blue-500' : 'border-gray-300'}`}
                   />
                 )}
-              </div>
-            </div>
-
-            {/* Product Details Section */}
-            <div className="lg:w-1/2 p-8 flex flex-col justify-between">
-              <div>
-                <h1 className="text-4xl font-bold mb-4 text-gray-900">{product.name}</h1>
-                {product.type && (
-                  <div className="mb-4">
-                    <span className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                      {product.type}
-                    </span>
-                  </div>
-                )}
-                <p className="text-lg text-gray-700 mb-6">{product.description}</p>
-                <div className="mb-6">
-                  <span className="text-4xl font-bold text-blue-600">₹{formatPrice(product.price)}</span>
-                  {product.oldPrice && (
-                    <span className="ml-4 text-xl text-gray-500 line-through">
-                      ₹{formatPrice(product.oldPrice)}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div>
-                <button
-                  onClick={handleAddToCart}
-                  className="w-full bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md transition duration-200 hover:bg-blue-700 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-                >
-                  {loading ? "Processing..." : "Add to Cart"}
-                </button>
-                <div className="mt-6 space-y-4">
-                  <div className="flex items-center text-gray-700">
-                    <Truck className="mr-2" size={20} />
-                    <span>Free shipping on orders over ₹1,000 across India</span>
-                  </div>
-                  <div className="flex items-center text-gray-700">
-                    <ShieldCheck className="mr-2" size={20} />
-                    <span>Warranty as per the manufacturer</span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -265,11 +285,11 @@ function ProductView() {
                       
                       <div className="flex items-baseline mb-4">
                         <span className="text-xl font-bold text-blue-600">
-                          ₹{formatPrice(similarProduct.price)}
+                          {formatPrice(similarProduct.price)}
                         </span>
                         {similarProduct.originalPrice > similarProduct.price && (
                           <span className="ml-2 text-sm text-gray-500 line-through">
-                            ₹{formatPrice(similarProduct.originalPrice)}
+                            {formatPrice(similarProduct.originalPrice)}
                           </span>
                         )}
                       </div>

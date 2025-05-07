@@ -1,174 +1,166 @@
 // SignUp.jsx
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { auth, db } from '../firebase/config';
-import {
-  createUserWithEmailAndPassword,
-  signInWithPopup,
-  GoogleAuthProvider,
-  GithubAuthProvider,
-} from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
-import { setUser } from '../redux/userSlice';
-import ReCAPTCHA from 'react-google-recaptcha'; 
-import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 function SignUp() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [profilePic, setProfilePic] = useState('');
+  const [formData, setFormData] = useState({
+    FullName: '',
+    UserID: '',
+    Password: '',
+    ConfirmPassword: '',
+    Role: 'Student',
+    Class: '',
+    Email: '',
+    FacebookLink: '',
+    Phone: '',
+  });
   const [loading, setLoading] = useState(false);
-  const [captchaVerified, setCaptchaVerified] = useState(false); 
-  const recaptchaRef = useRef(); 
   const navigate = useNavigate();
-  const location = useLocation();
-  const dispatch = useDispatch();
-  
-  // Get the redirect path from location state if exists
-  const from = location.state?.from?.pathname || "/";
 
-  const handleSignUp = async (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!captchaVerified) {
-      toast.error("Please verify the CAPTCHA.");
+    const { FullName, UserID, Password, ConfirmPassword, Role, Class, Email, FacebookLink, Phone } = formData;
+
+    if (Password !== ConfirmPassword) {
+      toast.error('Passwords do not match.');
+      return;
+    }
+
+    if (Role === 'Student' && !Class) {
+      toast.error('Class is required for students.');
       return;
     }
 
     setLoading(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, `${UserID}@example.com`, Password);
       const user = userCredential.user;
 
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        email: user.email,
-        name: name || user.displayName || '',
-        profilePic: profilePic || '',
-        cart: [],
+      await setDoc(doc(db, 'users', user.uid), {
+        FullName,
+        UserID,
+        Role,
+        Class: Role === 'Student' ? Class : '',
+        Email,
+        FacebookLink,
+        Phone,
+        AvgRating: '0',
+        RatingCount: '0',
       });
 
-      dispatch(setUser(user));
-      toast.success("Sign up successful!");
-      // Redirect to intended destination or home
-      navigate(from, { replace: true });
+      toast.success('Sign up successful!');
+      navigate('/');
     } catch (error) {
-      console.error("Error signing up:", error);
-      toast.error(error.message || "An error occurred. Please try again.");
-      
-      setCaptchaVerified(false);
-      recaptchaRef.current.reset(); 
+      console.error('Error signing up:', error);
+      toast.error(error.message || 'An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSocialSignUp = async (provider) => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        email: user.email,
-        name: user.displayName || '',
-        profilePic: user.photoURL || '',
-        cart: [],
-      }, { merge: true });
-
-      dispatch(setUser(user));
-      toast.success("Sign up successful!");
-      // Redirect to intended destination or home
-      navigate(from, { replace: true });
-    } catch (error) {
-      console.error("Error with social sign up:", error);
-      toast.error(error.message || "An error occurred.");
-    }
-  };
-
-  const handleCaptchaVerification = (value) => {
-    setCaptchaVerified(!!value);
-  };
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }} 
-      animate={{ opacity: 1, y: 0 }} 
-      transition={{ duration: 0.6, ease: "easeInOut" }} 
-      className="container mx-auto px-4 py-8 bg-gray-50"
-    >
-      <div className="flex justify-center items-center min-h-screen bg-gray-50 pt-20">
-        <form
-          onSubmit={handleSignUp}
-          className="w-full max-w-md bg-white p-8 rounded-lg shadow-md"
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-6 text-center">Sign Up</h1>
+      <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
+        <input
+          type="text"
+          name="FullName"
+          value={formData.FullName}
+          onChange={handleChange}
+          placeholder="Full Name"
+          required
+          className="w-full p-3 border border-gray-300 rounded-lg"
+        />
+        <input
+          type="text"
+          name="UserID"
+          value={formData.UserID}
+          onChange={handleChange}
+          placeholder="User ID"
+          required
+          className="w-full p-3 border border-gray-300 rounded-lg"
+        />
+        <input
+          type="password"
+          name="Password"
+          value={formData.Password}
+          onChange={handleChange}
+          placeholder="Password"
+          required
+          className="w-full p-3 border border-gray-300 rounded-lg"
+        />
+        <input
+          type="password"
+          name="ConfirmPassword"
+          value={formData.ConfirmPassword}
+          onChange={handleChange}
+          placeholder="Confirm Password"
+          required
+          className="w-full p-3 border border-gray-300 rounded-lg"
+        />
+        <select
+          name="Role"
+          value={formData.Role}
+          onChange={handleChange}
+          className="w-full p-3 border border-gray-300 rounded-lg"
         >
-          <h2 className="text-3xl font-semibold text-center mb-6">Sign Up</h2>
+          <option value="Student">Student</option>
+          <option value="Teacher">Teacher</option>
+        </select>
+        {formData.Role === 'Student' && (
           <input
             type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            name="Class"
+            value={formData.Class}
+            onChange={handleChange}
+            placeholder="Class"
             required
-            className="w-full p-4 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border border-gray-300 rounded-lg"
           />
-          <input
-            type="url"
-            placeholder="Profile Picture URL \\ use GuGL/GHub to skip this"
-            value={profilePic}
-            onChange={(e) => setProfilePic(e.target.value)}
-            className="w-full p-4 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full p-4 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full p-4 mb-6 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <ReCAPTCHA
-            sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY || "6LddLgYrAAAAAHVincfRV9vd1Qy_cyez6HHBmMuv"} 
-            onChange={handleCaptchaVerification}
-            ref={recaptchaRef} 
-            className="mb-4"
-          />
-          <button
-            type="submit"
-            className={`w-full bg-blue-600 text-white py-2 rounded-lg font-semibold transition-all duration-200 ${loading || !captchaVerified ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
-            disabled={loading || !captchaVerified}
-          >
-            {loading ? "Processing..." : "Sign Up"}
-          </button>
-          <div className="mt-4">
-            <button 
-              onClick={() => handleSocialSignUp(new GoogleAuthProvider())}
-              className="w-full bg-red-500 text-white py-2 rounded-lg mb-2 hover:bg-red-600 transition duration-200"
-            >
-              Sign up with Google
-            </button>
-            <button
-              onClick={() => handleSocialSignUp(new GithubAuthProvider())}
-              className="w-full bg-gray-800 text-white py-2 rounded-lg mb-2 hover:bg-gray-900 transition duration-200"
-            >
-              Sign up with Github
-            </button>
-          </div>
-          <p className="mt-4 text-center text-gray-600">
-            Already have an account? <a href="/signin" className="text-blue-600 hover:underline">Sign In</a>
-          </p>
-        </form>
-      </div>
-    </motion.div>
+        )}
+        <input
+          type="email"
+          name="Email"
+          value={formData.Email}
+          onChange={handleChange}
+          placeholder="Email (optional)"
+          className="w-full p-3 border border-gray-300 rounded-lg"
+        />
+        <input
+          type="url"
+          name="FacebookLink"
+          value={formData.FacebookLink}
+          onChange={handleChange}
+          placeholder="Facebook Link (optional)"
+          className="w-full p-3 border border-gray-300 rounded-lg"
+        />
+        <input
+          type="text"
+          name="Phone"
+          value={formData.Phone}
+          onChange={handleChange}
+          placeholder="Phone"
+          required
+          className="w-full p-3 border border-gray-300 rounded-lg"
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
+        >
+          {loading ? 'Signing Up...' : 'Sign Up'}
+        </button>
+      </form>
+    </div>
   );
 }
 

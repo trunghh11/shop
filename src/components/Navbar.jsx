@@ -5,17 +5,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   HomeIcon,
   TagIcon,
-  InformationCircleIcon,
-  PhoneIcon,
+  // PhoneIcon,
   UserCircleIcon,
-  ShoppingBagIcon
+  // ShoppingBagIcon,
+  BookOpenIcon,
 } from '@heroicons/react/24/outline';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../firebase/config';
 import { signOut } from 'firebase/auth';
 import { toast } from 'react-toastify';
 import { getDoc, doc } from 'firebase/firestore';
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -30,8 +30,8 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Get cart items from Redux store
-  const cartItems = useSelector(state => state.cart.items);
-  const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+  // const cartItems = useSelector(state => state.cart.items);
+  // const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -39,8 +39,8 @@ export default function Navbar() {
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          setProfilePic(userData.profilePic || 'https://via.placeholder.com/40');
-          setUserName(userData.name || 'User');
+          setProfilePic(userData.profilePic || 'https://img.freepik.com/vecteurs-premium/icones-utilisateur-comprend-icones-utilisateur-symboles-icones-personnes-elements-conception-graphique-qualite-superieure_981536-526.jpg?semt=ais_hybrid&w=740');
+          setUserName(userData.FullName || 'User');
         }
       }
     };
@@ -78,9 +78,10 @@ export default function Navbar() {
 
   const navigation = [
     { name: 'Home', href: '/', icon: HomeIcon },
-    { name: 'Products', href: '/products', icon: TagIcon },
-    { name: 'About', href: '/about', icon: InformationCircleIcon },
-    { name: 'Contact', href: '/contact', icon: PhoneIcon },
+    // { name: 'Products', href: '/products', icon: TagIcon },
+    // { name: 'Contact', href: '/contact', icon: PhoneIcon },
+    { name: 'My Posts', href: '/myposts', icon: BookOpenIcon },
+    { name: 'Post Product', href: '/post-product', icon: TagIcon },
   ];
 
   const navbarVariants = {
@@ -128,21 +129,21 @@ export default function Navbar() {
     }
   };
 
-  const badgeVariants = {
-    initial: { scale: 0 },
-    animate: { 
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 500,
-        damping: 15
-      }
-    },
-    exit: { 
-      scale: 0,
-      opacity: 0
-    }
-  };
+  // const badgeVariants = {
+  //   initial: { scale: 0 },
+  //   animate: { 
+  //     scale: 1,
+  //     transition: {
+  //       type: "spring",
+  //       stiffness: 500,
+  //       damping: 15
+  //     }
+  //   },
+  //   exit: { 
+  //     scale: 0,
+  //     opacity: 0
+  //   }
+  // };
 
   return (
     <>
@@ -217,7 +218,7 @@ export default function Navbar() {
                     whileTap={{ scale: 0.9 }}
                     className="relative"
                   >
-                    <Link
+                    {/* <Link
                       to="/cart"
                       className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
                     >
@@ -235,7 +236,7 @@ export default function Navbar() {
                           </motion.span>
                         )}
                       </AnimatePresence>
-                    </Link>
+                    </Link> */}
                   </motion.div>
 
                   <div className="relative h-9">
@@ -397,7 +398,7 @@ export default function Navbar() {
                       animate="visible"
                       exit="hidden"
                     >
-                      <Link
+                      {/* <Link
                         to="/cart"
                         className="flex items-center justify-between px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
                         onClick={() => setIsMobileMenuOpen(false)}
@@ -411,7 +412,7 @@ export default function Navbar() {
                             </span>
                           )}
                         </div>
-                      </Link>
+                      </Link> */}
                     </motion.div>
                     
                     <motion.div
