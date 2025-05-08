@@ -4,6 +4,8 @@ import Navbar from "./components/Navbar";
 import { ToastContainer } from "react-toastify";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
+import FundHomePage from "./pages/FundHomePage"
+import FundDetailPage from './pages/FundDetailPage'; 
 import ContactUs from "./pages/ContactUs";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
@@ -70,6 +72,7 @@ function App() {
             <Route path="/products" element={<Products />} />
             <Route path="/product/:id" element={<ProductView />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/fund/:id" element={<FundDetailPage />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/password-reset" element={<PasswordReset />} />
@@ -79,6 +82,8 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/checkout" element={<UnifiedCheckout />} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/fund-home-page" element={<FundHomePage />} />
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
