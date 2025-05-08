@@ -88,7 +88,6 @@ const getPageTitle = (pathname) => {
     '/': 'Welcome to KamiKoto',
     '/products': 'Our Premium Collection',
     '/about': 'About Us',
-    '/funding-home-page': 'Fund',
     '/contact': 'Get in Touch',
     '/cart': 'Your Shopping Cart',
     '/my-account': 'Your Profile',
