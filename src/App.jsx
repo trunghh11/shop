@@ -28,6 +28,8 @@ import PasswordReset from './pages/PasswordReset';
 import PostProduct from './pages/PostProduct';
 import MyPosts from './pages/MyPosts';
 import UserProfile from './pages/UserProfile';
+import Categories from "./pages/Categories";
+import CategoryProducts from "./pages/CategoryProducts";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -82,7 +84,6 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/checkout" element={<UnifiedCheckout />} />
-            <Route path="/about" element={<AboutUs />} />
             <Route path="/fund-home-page" element={<FundHomePage />} />
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -90,6 +91,8 @@ function App() {
             <Route path="/post-product" element={<PostProduct />} />
             <Route path="/myposts" element={<MyPosts />} />
             <Route path="/user/:userId" element={<UserProfile />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/category/:categoryId" element={<CategoryProducts />} />
           </Routes>
         </main>
         <Footer />

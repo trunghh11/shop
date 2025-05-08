@@ -24,6 +24,10 @@ service cloud.firestore {
                    get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin';
    }
 
+   match /categories/{categoryId} {
+     allow read: if true; // Allow all users to read categories
+   }
+
    match /users/{userId}/cart/{cartItemId} {
      allow read, write: if request.auth != null && request.auth.uid == userId;
    }
@@ -43,6 +47,20 @@ service cloud.firestore {
       );
       allow delete: if request.auth != null && request.auth.uid == resource.data.PosterID; // Allow users to delete their own posts
    }
-
+   
+    match /fund/{fundId} {
+      allow read: if true;  
+    }
+    
+    match /fund_transaction/{transactionId} {
+      // Allow read access to all authenticated users
+      allow read: if request.auth != null;
+      
+      // Allow write access to authenticated users
+      // You can restrict this further based on the user's role, fund, etc.
+      allow create: if request.auth != null;  // Any authenticated user can create a donation
+      allow update: if request.auth != null && request.auth.data.userId == resource.data.DonorID; // Only the donor can update their transaction
+      allow delete: if request.auth != null && request.auth.data.userId == resource.data.DonorID; // Only the donor can delete their own transaction
+    }
  }
 }
