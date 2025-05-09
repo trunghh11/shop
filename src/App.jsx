@@ -28,6 +28,7 @@ import MyPosts from './pages/MyPosts';
 import UserProfile from './pages/UserProfile';
 import Categories from "./pages/Categories";
 import CategoryProducts from "./pages/CategoryProducts";
+import FundHomePage from "./pages/FundHomePage";
 
 import ExchangeTransactionForm from './pages/ExchangeTransactionForm';
 import SaleTransactionForm from './pages/SaleTransactionForm';

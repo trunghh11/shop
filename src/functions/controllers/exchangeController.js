@@ -1,13 +1,14 @@
 // functions/controllers/exchangeController.js
-import { collection, doc, setDoc, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../firebase/config";
+import {collection, doc, setDoc} from "firebase/firestore";
+import {getDocs, query, where} from "firebase/firestore";
+import {db} from "../../firebase/config";
 import ExchangeTransaction from "../models/exchangeTransaction";
-import { createNotification } from "./notificationsController";
-import { getDoc, updateDoc } from "firebase/firestore";
+import {createNotification} from "./notificationsController";
+import {getDoc, updateDoc} from "firebase/firestore";
 /**
  * Tạo giao dịch trao đổi mới
  * @param {Object} formData - Dữ liệu từ form người dùng
- * @returns {Promise<Object>}
+ * @return {Promise<Object>}
  */
 export const createExchangeTransaction = async (formData) => {
   try {

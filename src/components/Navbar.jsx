@@ -9,6 +9,7 @@ import {
   // ShoppingBagIcon,
   BookOpenIcon,
   BanknotesIcon,
+  UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../firebase/config';

@@ -1,6 +1,6 @@
 rules_version = '2';
 service cloud.firestore {
- match /databases/{database}/documents {
+  match /databases/{database}/documents {
 
    match /users/{userId} {
      allow read: if request.auth != null; // Allow all authenticated users to view user profiles
@@ -52,21 +52,25 @@ service cloud.firestore {
       allow create: if request.auth != null;  // Any authenticated user can create a donation
       allow update: if request.auth != null && request.auth.data.userId == resource.data.DonorID; // Only the donor can update their transaction
       allow delete: if request.auth != null && request.auth.data.userId == resource.data.DonorID; // Only the donor can delete their own transaction
+    }
 
-        match /exchangeTransactions/{transactionId} {
-      allow read: if request.auth != null && 
-                (request.auth.uid == resource.data.User1ID || 
-                 request.auth.uid == resource.data.User2ID);
+        // EXCHANGE TRANSACTION RULES
+    match /exchangeTransactions/{transactionId} {
+      allow read: if request.auth != null; 
       allow create: if request.auth != null;
-      allow update: if request.auth != null && 
-                  (request.auth.uid == resource.data.User1ID || 
-                   request.auth.uid == resource.data.User2ID);
+      allow update: if request.auth != null;  // Cho phép mọi người dùng đã xác thực cập nhật
     }
     
+    // NOTIFICATION RULES
     match /notifications/{notificationId} {
-      allow read: if request.auth != null && request.auth.uid == resource.data.UserID;
+      allow read: if request.auth != null && request.auth.uid == resource.data.uid;
       allow create: if request.auth != null;
-      allow update: if request.auth != null && request.auth.uid == resource.data.UserID;
+      allow update: if request.auth != null && request.auth.uid == resource.data.uid;
     }
- }
+
+    // SALE TRANSACTION RULES
+    match /saleTransactions/{transactionId} {
+      allow read, write: if request.auth != null;
+    }
+  }
 }
