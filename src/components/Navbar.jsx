@@ -85,8 +85,10 @@ export default function Navbar() {
     { name: 'Post Product', href: '/post-product', icon: TagIcon },
     { name: 'Fund', href: '/fund-home-page', icon: BanknotesIcon },
  
+    { name: "Notifications", href: "/notification-list", icon: BookOpenIcon },
+    { name: 'Exchange Transaction', href: '/create-exchange-transaction', icon: UserCircleIcon },
+    { name: 'Sale Transaction', href: '/create-sale-transaction', icon: UserCircleIcon },
   ];
-  
 
   const navbarVariants = {
     hidden: { 
@@ -229,6 +231,7 @@ export default function Navbar() {
                       to="/cart"
                       className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
                     >
+                      <ShoppingBagIcon className="h-6 w-6" />
                       <AnimatePresence>
                         {cartItemCount > 0 && (
                           <motion.span
@@ -282,6 +285,7 @@ export default function Navbar() {
                                   'flex items-center px-4 py-2 text-sm text-gray-700'
                                 )}
                               >
+                                <UserCircleIcon className="mr-3 h-5 w-5 text-gray-400" />
                                 My Account
                               </Link>
                             )}
@@ -388,6 +392,7 @@ export default function Navbar() {
                       )}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
+                      <item.icon className="h-5 w-5 mr-3" />
                       {item.name}
                     </Link>
                   </motion.div>
@@ -408,6 +413,7 @@ export default function Navbar() {
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
                         <div className="flex items-center relative">
+                          <ShoppingBagIcon className="h-5 w-5 mr-3" />
                           Cart
                           {cartItemCount > 0 && (
                             <span className="absolute top-1 left-4 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
@@ -430,6 +436,7 @@ export default function Navbar() {
                         className="flex items-center px-3 py-2 rounded-lg text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors"
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
+                        <UserCircleIcon className="h-5 w-5 mr-3" />
                         My Account
                       </Link>
                     </motion.div>

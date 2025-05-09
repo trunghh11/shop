@@ -7,21 +7,16 @@ service cloud.firestore {
      allow write: if request.auth != null && request.auth.uid == userId;
    }
 
-   match /admins/{adminId} {
-    allow read: if request.auth != null && 
-                get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin';
-   }
-
    match /products/{productId} {
      allow read: if true;
      allow create: if request.auth != null; // Allow authenticated users to create new products
      allow update: if request.auth != null && 
-                   (get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin' || 
+                   (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userRole == 'Admin' || 
                     request.auth.uid == resource.data.PosterID) && 
                    (request.resource.data.keys().hasOnly(['Price', 'Stock']) || 
-                    get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin'); // Allow users to update Price and Stock of their own products
+                    get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userRole == 'Admin'); // Allow users to update Price and Stock of their own products
      allow delete: if request.auth != null && 
-                   get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin';
+                   get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userRole == 'Admin';
    }
 
    match /categories/{categoryId} {
@@ -41,11 +36,7 @@ service cloud.firestore {
    match /post/{postId} {
       allow read: if request.auth != null; // Allow all authenticated users to view posts
       allow create: if request.auth != null && request.auth.uid == request.resource.data.PosterID; // Allow users to create posts
-      allow update: if request.auth != null && (
-        request.auth.uid == resource.data.PosterID || // Allow users to update their own posts
-        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin' // Allow admins to update posts
-      );
-      allow delete: if request.auth != null && request.auth.uid == resource.data.PosterID; // Allow users to delete their own posts
+      allow delete: if request.auth != null && request.auth.uid == resource.data.PosterID; // Allow users to update/delete their own posts
    }
    
     match /fund/{fundId} {
@@ -61,6 +52,21 @@ service cloud.firestore {
       allow create: if request.auth != null;  // Any authenticated user can create a donation
       allow update: if request.auth != null && request.auth.data.userId == resource.data.DonorID; // Only the donor can update their transaction
       allow delete: if request.auth != null && request.auth.data.userId == resource.data.DonorID; // Only the donor can delete their own transaction
+
+        match /exchangeTransactions/{transactionId} {
+      allow read: if request.auth != null && 
+                (request.auth.uid == resource.data.User1ID || 
+                 request.auth.uid == resource.data.User2ID);
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && 
+                  (request.auth.uid == resource.data.User1ID || 
+                   request.auth.uid == resource.data.User2ID);
+    }
+    
+    match /notifications/{notificationId} {
+      allow read: if request.auth != null && request.auth.uid == resource.data.UserID;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && request.auth.uid == resource.data.UserID;
     }
  }
 }

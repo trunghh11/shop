@@ -4,8 +4,6 @@ import Navbar from "./components/Navbar";
 import { ToastContainer } from "react-toastify";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
-import FundHomePage from "./pages/FundHomePage"
-import FundDetailPage from './pages/FundDetailPage'; 
 import ContactUs from "./pages/ContactUs";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
@@ -31,6 +29,12 @@ import UserProfile from './pages/UserProfile';
 import Categories from "./pages/Categories";
 import CategoryProducts from "./pages/CategoryProducts";
 
+import ExchangeTransactionForm from './pages/ExchangeTransactionForm';
+import SaleTransactionForm from './pages/SaleTransactionForm';
+import NotificationItem from './components/Notification';
+import NotificationList from './pages/NotificationList';
+import ExchangeResponsePage from './pages/ExchangeResponsePage';
+import SaleResponsePage from './pages/SaleResponsePage';
 function App() {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
@@ -74,7 +78,6 @@ function App() {
             <Route path="/products" element={<Products />} />
             <Route path="/product/:id" element={<ProductView />} />
             <Route path="/cart" element={<Cart />} />
-            <Route path="/fund/:id" element={<FundDetailPage />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/password-reset" element={<PasswordReset />} />
@@ -90,6 +93,12 @@ function App() {
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/post-product" element={<PostProduct />} />
             <Route path="/myposts" element={<MyPosts />} />
+            <Route path="/create-exchange-transaction" element={<ExchangeTransactionForm />} />
+            <Route path="/create-sale-transaction" element={<SaleTransactionForm />} />
+            <Route path="/sale-response/:saleId" element={<SaleResponsePage />} />
+            <Route path="/notifications" element={<NotificationItem />} />
+            <Route path="/notification-list" element={<NotificationList />} />
+            <Route path="/exchange-response/:exchangeId" element={<ExchangeResponsePage />} />            
             <Route path="/user/:userId" element={<UserProfile />} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/category/:categoryId" element={<CategoryProducts />} />
