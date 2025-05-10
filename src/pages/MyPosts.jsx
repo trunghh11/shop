@@ -10,6 +10,7 @@ export default function MyPosts() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fullName, setFullName] = useState('');
+  const [denialReasons, setDenialReasons] = useState({});
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -52,6 +53,16 @@ export default function MyPosts() {
 
         const productsArray = await Promise.all(productPromises);
         setProducts(productsArray.flat());
+
+        // Fetch denial reasons
+        const denialReasonsCol = collection(db, 'post_denial_reasons');
+        const denialReasonsSnapshot = await getDocs(denialReasonsCol);
+        const reasonsMap = {};
+        denialReasonsSnapshot.docs.forEach((doc) => {
+          const data = doc.data();
+          reasonsMap[data.PostID] = data.Reasons; // Lưu lý do từ chối theo PostID
+        });
+        setDenialReasons(reasonsMap);
       } catch (error) {
         toast.error('Failed to fetch products: ' + error.message);
       } finally {
@@ -130,6 +141,12 @@ export default function MyPosts() {
                 >
                   Status: {product.postStatus}
                 </p>
+                {/* Hiển thị lý do từ chối nếu có */}
+                {product.postStatus === 'Đã từ chối' && denialReasons[product.PostID] && (
+                  <p className="text-sm text-red-500 mt-1">
+                    Reason: {denialReasons[product.PostID]}
+                  </p>
+                )}
                 <p
                   className={`text-md font-medium mt-1 ${
                     product.Stock > 0 ? 'text-green-600' : 'text-red-600'

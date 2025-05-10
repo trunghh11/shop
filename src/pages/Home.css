@@ -1,0 +1,55 @@
+/* Định dạng thanh trượt */
+.horizontal-slider {
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+/* Định dạng track (phần đã chọn) */
+.track {
+  height: 100%;
+  border-radius: 3px;
+}
+
+/* Track nằm trong khoảng giá trị */
+.track-inside {
+  background: #007bff; /* Màu xanh */
+}
+
+/* Track nằm ngoài khoảng giá trị */
+.track-outside {
+  background: #ccc; /* Màu xám */
+}
+
+/* Định dạng thumb (nút kéo) */
+.thumb {
+  height: 16px;
+  width: 16px;
+  background: #007bff;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  top: -5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Hiển thị giá trị bên dưới thumb */
+.thumb-value {
+  position: absolute;
+  top: 20px; /* Đẩy giá trị xuống dưới thumb */
+  font-size: 12px;
+  color: #333;
+  background: #fff;
+  padding: 2px 4px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
+
+/* Hiển thị số tối thiểu và tối đa bên dưới thanh trượt */
+.slider-values {
+  font-size: 12px;
+  color: #555;
+}

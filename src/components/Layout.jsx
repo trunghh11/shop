@@ -85,7 +85,7 @@ const Layout = ({ children }) => {
 // Helper function to get page titles
 const getPageTitle = (pathname) => {
   const titles = {
-    '/': 'Welcome to KamiKoto',
+    '/': 'Welcome to Tsii',
     '/products': 'Our Premium Collection',
     '/about': 'About Us',
     '/funding-home-page': 'Fund',
@@ -95,7 +95,7 @@ const getPageTitle = (pathname) => {
     '/signin': 'Sign In',
     '/signup': 'Create Account'
   };
-  return titles[pathname] || 'KamiKoto';
+  return titles[pathname] || 'Tsii';
 };
 
 // Helper function to get page descriptions
@@ -107,7 +107,7 @@ const getPageDescription = (pathname) => {
     '/contact': 'We\'d love to hear from you',
     '/cart': 'Review and manage your selected items',
     '/my-account': 'Manage your account and preferences',
-    '/signin': 'Welcome back to KamiKoto',
+    '/signin': 'Welcome back to Tsii',
     '/signup': 'Join our community of satisfied customers'
   };
   return descriptions[pathname] || '';

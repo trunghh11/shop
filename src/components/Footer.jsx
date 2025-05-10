@@ -60,7 +60,7 @@ const Footer = () => {
               className="text-2xl font-bold mb-4"
               whileHover={{ scale: 1.05 }}
             >
-              KamiKoto
+              Tsii
             </motion.h3>
             <motion.p 
               className="text-gray-400"

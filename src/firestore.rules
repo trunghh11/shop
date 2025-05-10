@@ -11,19 +11,21 @@ service cloud.firestore {
      allow read: if true;
      allow create: if request.auth != null; // Allow authenticated users to create new products
      allow update: if request.auth != null && 
-                   (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userRole == 'Admin' || 
+                   (get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin' || 
                     request.auth.uid == resource.data.PosterID) && 
                    (request.resource.data.keys().hasOnly(['Price', 'Stock']) || 
-                    get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userRole == 'Admin'); // Allow users to update Price and Stock of their own products
+                    get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin'); // Allow users to update Price and Stock of their own products
      allow delete: if request.auth != null && 
-                   get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userRole == 'Admin';
-<<<<<<< HEAD
+                   get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin';
+   }
+
+   match /admins/{adminId} {
+    allow read: if request.auth != null && 
+                get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin';
    }
 
    match /categories/{categoryId} {
      allow read: if true; // Allow all users to read categories
-=======
->>>>>>> origin/lmt
    }
 
    match /users/{userId}/cart/{cartItemId} {
@@ -37,9 +39,19 @@ service cloud.firestore {
    }
 
    match /post/{postId} {
-      allow read: if request.auth != null; // Allow all authenticated users to view posts
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.PosterID; // Allow users to create posts
-      allow delete: if request.auth != null && request.auth.uid == resource.data.PosterID; // Allow users to update/delete their own posts
+      allow read: if request.auth != null; // Cho phép tất cả người dùng đã đăng nhập đọc
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.PosterID; // Cho phép người dùng tạo bài viết
+      allow update: if request.auth != null && (
+        request.auth.uid == resource.data.PosterID || // Cho phép người tạo bài viết cập nhật bài viết của họ
+        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin' // Cho phép admin cập nhật bài viết
+      );
+      allow delete: if request.auth != null && request.auth.uid == resource.data.PosterID; // Cho phép người tạo bài viết xóa bài viết của họ
+   }
+
+   match /post_denial_reasons/{post_denial_reasonId} {
+      allow read: if request.auth != null; // Cho phép tất cả người dùng đã đăng nhập đọc
+      allow create, write: if request.auth != null && 
+                  get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.UserRole == 'Admin'; // Chỉ admin được ghi
    }
    
     match /fund/{fundId} {

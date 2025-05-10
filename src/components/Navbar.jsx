@@ -10,6 +10,10 @@ import {
   BookOpenIcon,
   BanknotesIcon,
   UserCircleIcon,
+  BellIcon,
+  ArrowPathRoundedSquareIcon,
+  CurrencyDollarIcon,
+  ArrowUpOnSquareStackIcon,
 } from '@heroicons/react/24/outline';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../firebase/config';
@@ -83,12 +87,8 @@ export default function Navbar() {
     // { name: 'Products', href: '/products', icon: TagIcon },
     // { name: 'Contact', href: '/contact', icon: PhoneIcon },
     { name: 'My Posts', href: '/myposts', icon: BookOpenIcon },
-    { name: 'Post Product', href: '/post-product', icon: TagIcon },
+    { name: 'Post Product', href: '/post-product', icon: ArrowUpOnSquareStackIcon },
     { name: 'Fund', href: '/fund-home-page', icon: BanknotesIcon },
- 
-    { name: "Notifications", href: "/notification-list", icon: BookOpenIcon },
-    { name: 'Exchange Transaction', href: '/create-exchange-transaction', icon: UserCircleIcon },
-    { name: 'Sale Transaction', href: '/create-sale-transaction', icon: UserCircleIcon },
   ];
 
   const navbarVariants = {
@@ -179,7 +179,7 @@ export default function Navbar() {
                   src="/kamikoto-logo-with-name-tagline-dark-brown-bg.png"
                   alt="KamiKoto"
                 />
-                <span className="font-bold text-xl text-gray-800">KamiKoto</span>
+                <span className="font-bold text-xl text-gray-800">Tsii</span>
               </Link>
             </motion.div>
 
@@ -291,6 +291,52 @@ export default function Navbar() {
                               </Link>
                             )}
                           </Menu.Item>
+
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link
+                                to="/notification-list"
+                                className={classNames(
+                                  active ? 'bg-gray-50' : '',
+                                  'flex items-center px-4 py-2 text-sm text-gray-700'
+                                )}
+                              >
+                                <BellIcon className="mr-3 h-5 w-5 text-gray-400" />
+                                Notifications
+                              </Link>
+                            )}
+                          </Menu.Item>
+
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link
+                                to="/create-exchange-transaction"
+                                className={classNames(
+                                  active ? 'bg-gray-50' : '',
+                                  'flex items-center px-4 py-2 text-sm text-gray-700'
+                                )}
+                              >
+                                <ArrowPathRoundedSquareIcon className="mr-3 h-5 w-5 text-gray-400" />
+                                Exchange Transaction
+                              </Link>
+                            )}
+                          </Menu.Item>
+
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link
+                                to="/create-sale-transaction"
+                                className={classNames(
+                                  active ? 'bg-gray-50' : '',
+                                  'flex items-center px-4 py-2 text-sm text-gray-700'
+                                )}
+                              >
+                                <CurrencyDollarIcon className="mr-3 h-5 w-5 text-gray-400" />
+                                Sale Transaction
+                              </Link>
+                            )}
+                          </Menu.Item>
+
                           <Menu.Item>
                             {({ active }) => (
                               <button

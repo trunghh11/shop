@@ -176,12 +176,26 @@ function ProductView() {
                   <p className="text-sm text-gray-500">
                     Posted on {new Date(post.CreatedAt.seconds * 1000).toLocaleString()}
                   </p>
+
                 </div>
               </div>
             )}
 
+            <Link
+              to={`/user/${post.PosterID}`}
+              className="mt-2 inline-block bg-blue-600 text-white px-10 py-2 rounded-lg text-[20px] font-medium hover:bg-blue-700 transition-colors"
+            >
+              Liên hệ người bán
+            </Link>
+
+            {/* Divider */}
+            <hr className="my-6 border-gray-300" />
+            
             {/* Product Details */}
             <h1 className="text-4xl font-bold mb-4 text-gray-900">{product.ProductName}</h1>
+            <p className="text-gray-700 mb-4">
+              <strong>Mã sản phẩm:</strong> {product.id}
+            </p>
             <p className="text-gray-700 mb-4">
               <strong>Post Content:</strong> {post?.Content}
             </p>
