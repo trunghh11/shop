@@ -78,15 +78,6 @@ const SaleResponsePage = () => {
     
     fetchSaleData();
   }, [saleId, user, loading, navigate]);
-
-//   // Kiểm tra lại vai trò khi buyerDetails hoặc sellerDetails thay đổi
-//   useEffect(() => {
-//     if (user && buyerDetails && user.uid === buyerDetails.id) {
-//       setIsBuyer(true);
-//     } else if (user && sellerDetails && user.uid === sellerDetails.id) {
-//       setIsSeller(true);
-//     }
-//   }, [user, buyerDetails, sellerDetails]);
   
   const fetchUserDetails = async (buyerId, sellerId) => {
     try {

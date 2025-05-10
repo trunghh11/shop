@@ -16,10 +16,7 @@ export const createExchangeTransaction = async (formData) => {
     
     // Tạo đối tượng giao dịch từ form data
     const transaction = new ExchangeTransaction({
-      // ExchangeID: exchangeID,
-
       ExchangeID: formData.ExchangeID,
-
       CreatedAt: new Date(),
       ProductID1: formData.ProductID1,
       ProductID2: formData.ProductID2,
@@ -39,24 +36,21 @@ export const createExchangeTransaction = async (formData) => {
 
     console.log("Exchange transaction created successfully:", transaction);
     
-// Trước tiên, cần truy vấn uid từ Firestore dựa vào User1ID và User2ID
+// LẤY uid từ User1ID và User2ID để tạo thông báo
 const queryUser1 = query(collection(db, "users"), where("UserID", "==", formData.User1ID));
 const queryUser2 = query(collection(db, "users"), where("UserID", "==", formData.User2ID));
-
 const user1Snapshot = await getDocs(queryUser1);
 const user2Snapshot = await getDocs(queryUser2);
-
 let user1Uid = "";
 let user2Uid = "";
-
 if (!user1Snapshot.empty) {
   user1Uid = user1Snapshot.docs[0].id; // Lấy uid từ document ID
 }
-
 if (!user2Snapshot.empty) {
   user2Uid = user2Snapshot.docs[0].id; // Lấy uid từ document ID
 }
 
+//TẠO NOTIFICATION
 if (user1Uid) {
   console.log("===== DEBUG createExchangeTransaction - User1 Notification =====");
   console.log("exchangeID:", exchangeID);
@@ -139,19 +133,17 @@ export const updateExchangeTransactionStatus = async (exchangeID, status) => {
       ...snapshot.data()
     });
     
-    // Cập nhật trạng thái giao dịch trong database
+    // CẬP NHẬT TRẠNG THÁI GIAO DỊCH
     await updateDoc(docRef, { Status: status });
     console.log(`Đã cập nhật trạng thái giao dịch ${exchangeID} thành ${status}`);
     
-    // Tìm uid của người dùng từ User1ID
+    // Tìm uid của người dùng từ UserID
     const user1Query = query(collection(db, "users"), where("UserID", "==", transaction.User1ID));
     const user1QuerySnapshot = await getDocs(user1Query);
     let user1Uid = "";
     if (!user1QuerySnapshot.empty) {
       user1Uid = user1QuerySnapshot.docs[0].id;
     }
-
-    // Tìm uid của người dùng từ User2ID 
     const user2Query = query(collection(db, "users"), where("UserID", "==", transaction.User2ID));
     const user2QuerySnapshot = await getDocs(user2Query);
     let user2Uid = "";
@@ -159,7 +151,7 @@ export const updateExchangeTransactionStatus = async (exchangeID, status) => {
       user2Uid = user2QuerySnapshot.docs[0].id;
     }
     
-    // Tạo thông báo cho cả hai người dùng dựa trên kết quả
+    // TẠO THÔNG BÁO DỰA VÀO TRẠNG THÁI (ĐỒNG Ý HOẶC TỪ CHỐI)
     if (status === "accepted") {
       // Tạo thông báo cho người yêu cầu (User1)
       if (user1Uid) {
@@ -191,7 +183,6 @@ export const updateExchangeTransactionStatus = async (exchangeID, status) => {
         });
         console.log("Đã tạo thông báo từ chối cho người yêu cầu");
       }
-      
       // Tạo thông báo cho người nhận yêu cầu (User2)
       if (user2Uid) {
         await createNotification(user2Uid, {

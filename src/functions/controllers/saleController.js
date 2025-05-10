@@ -26,14 +26,13 @@ export const createSaleTransaction = async (formData) => {
       });
 
         console.log("Data being sent to Firestore:", transaction.toJSON());
-
         // Lưu vào Firestore với saleID làm document ID
         const docRef = doc(db, "saleTransactions", saleID);
         await setDoc(docRef, transaction.toJSON());
     
         console.log("Sale transaction created successfully with ID:", saleID);
 
-        // Tìm uid của người mua và người bán
+        // TÌM uid
         const buyerQuery = query(collection(db, "users"), where("UserID", "==", formData.BuyerID));
         const sellerQuery = query(collection(db, "users"), where("UserID", "==", formData.SellerID));
 
@@ -57,7 +56,7 @@ export const createSaleTransaction = async (formData) => {
             console.log("Seller not found with UserID:", formData.SellerID);
         }
 
-        // Tạo thông báo cho người mua và người bán
+        // TẠO THÔNG BÁO CHO NGƯỜI MUA NGƯỜI BÁN
         if (buyerUid) {
             const notificationData = {
               Message: `Bạn đã đặt hàng sản phẩm ${formData.ProductID}.`,
@@ -67,7 +66,6 @@ export const createSaleTransaction = async (formData) => {
             console.log("Creating buyer notification:", notificationData);
             await createNotification(buyerUid, notificationData);
         }
-      
         if (sellerUid) {
             const notificationData = {
               Message: `${formData.BuyerID} đã đặt hàng sản phẩm ${formData.ProductID}.`,
@@ -129,7 +127,6 @@ export const updateSaleTransactionStatus = async (saleId, status) => {
       
       const transaction = SaleTransaction.fromJSON({
         ...snapshot.data()
-        // Không thêm TransactionID vì model không có
       });
       
       // Cập nhật trạng thái
@@ -139,17 +136,13 @@ export const updateSaleTransactionStatus = async (saleId, status) => {
       // Tìm uid người mua và người bán
       const buyerQuery = query(collection(db, "users"), where("UserID", "==", transaction.BuyerID));
       const sellerQuery = query(collection(db, "users"), where("UserID", "==", transaction.SellerID));
-      
       const buyerSnapshot = await getDocs(buyerQuery);
       const sellerSnapshot = await getDocs(sellerQuery);
-      
       let buyerUid = "";
       let sellerUid = "";
-      
       if (!buyerSnapshot.empty) {
         buyerUid = buyerSnapshot.docs[0].id;
       }
-      
       if (!sellerSnapshot.empty) {
         sellerUid = sellerSnapshot.docs[0].id;
       }

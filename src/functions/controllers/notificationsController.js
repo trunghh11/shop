@@ -68,30 +68,6 @@ export const createNotification = async (uid, notificationData) => {
       throw error;
     }
   };
-// // Lấy thông báo dựa trên uid (không phải UserID)
-// export const getUserNotifications = async (uid) => {
-//   try {
-//     console.log("Fetching notifications for user with uid:", uid);
-    
-//     const q = query(
-//       collection(db, "notifications"),
-//       where("uid", "==", uid),    // Lọc theo uid
-//       orderBy("CreatedAt", "desc")
-//     );
-    
-//     const querySnapshot = await getDocs(q);
-//     const notifications = querySnapshot.docs.map(doc => ({
-//       id: doc.id,
-//       ...doc.data()
-//     }));
-    
-//     console.log("Fetched notifications:", notifications);
-//     return notifications;
-//   } catch (error) {
-//     console.error("Error fetching notifications:", error);
-//     throw error;
-//   }
-// };
 
 // Đánh dấu thông báo đã đọc
 export const markNotificationAsRead = async (notificationID) => {
