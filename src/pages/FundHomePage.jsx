@@ -32,29 +32,29 @@ const FundHomePage = () => {
     const fetchAllData = async () => {
       try {
         console.log("Bắt đầu truy vấn dữ liệu...");
-        
+
         // Truy vấn tất cả các quỹ
         const fundSnapshot = await getDocs(
           query(collection(db, "fund"), orderBy("TargetAmount", "desc"), limit(12))
         );
         const fundsArray = fundSnapshot.docs.map((doc) => {
-  // Đảm bảo ID luôn có giá trị
-  if (!doc.id) {
-    console.error("Document without ID:", doc);
-  }
-  return {
-    id: doc.id, // ID của document
-    FundID: doc.data().FundID || parseInt(doc.id), // FundID từ data hoặc fallback
-    ...doc.data(),
-  };
-});
-        
+          // Đảm bảo ID luôn có giá trị
+          if (!doc.id) {
+            console.error("Document without ID:", doc);
+          }
+          return {
+            id: doc.id, // ID của document
+            FundID: doc.data().FundID || parseInt(doc.id), // FundID từ data hoặc fallback
+            ...doc.data(),
+          };
+        });
+
         console.log(`Đã truy vấn được ${fundsArray.length} fund:`, fundsArray);
 
         // Phân loại các quỹ theo Type
         const fundraisingCampaigns = fundsArray.filter(fund => fund.Type === "Gây quỹ bằng tiền");
         const productSaleFunds = fundsArray.filter(fund => fund.Type === "Gây quỹ bằng tiền");
-        
+
         // Truy vấn donated_item
         const itemSnapshot = await getDocs(
           query(collection(db, "donated_item"), limit(6))
@@ -63,7 +63,7 @@ const FundHomePage = () => {
           id: doc.id,
           ...doc.data(),
         }));
-        
+
         console.log(`Đã truy vấn được ${itemsArray.length} items:`, itemsArray);
 
         // Truy vấn fund_transaction chỉ khi đã đăng nhập
@@ -76,7 +76,7 @@ const FundHomePage = () => {
             id: doc.id,
             ...doc.data(),
           }));
-          
+
           console.log(`Đã truy vấn được ${transactionsArray.length} transactions:`, transactionsArray);
         } else {
           console.log("Không truy vấn fund_transaction vì người dùng chưa đăng nhập");
@@ -92,66 +92,7 @@ const FundHomePage = () => {
         setLoading(false);
       } catch (error) {
         console.error("Lỗi khi truy vấn dữ liệu:", error);
-        // Hiển thị dữ liệu mẫu khi có lỗi để kiểm tra UI
-        // const sampleData = {
-        //   fundraisingCampaigns: [
-        //     {
-        //       id: 'sample1',
-        //       FundID: 1,
-        //       FundName: "Hỗ trợ học sinh vùng lũ Quảng Bình (Dữ liệu mẫu)",
-        //       StartDate: { seconds: Date.now()/1000, nanoseconds: 0 },
-        //       EndDate: { seconds: Date.now()/1000 + 30*24*60*60, nanoseconds: 0 },
-        //       TargetAmount: 50000000,
-        //       CurrentAmount: 32500000,
-        //       Status: "Đang diễn ra",
-        //       Type: "Gây quỹ bằng tiền",
-        //       BannerURL: "https://via.placeholder.com/400x300"
-        //     }
-        //   ],
-        //   allFunds: [
-        //     {
-        //       id: 'sample2',
-        //       FundID: 2,
-        //       FundName: "Xây dựng thư viện trường làng Sơn La (Dữ liệu mẫu)",
-        //       StartDate: { seconds: Date.now()/1000, nanoseconds: 0 },
-        //       EndDate: { seconds: Date.now()/1000 + 60*24*60*60, nanoseconds: 0 },
-        //       TargetAmount: 75000000,
-        //       CurrentAmount: 25000000,
-        //       Status: "Đang diễn ra",
-        //       Type: "Giáo dục",
-        //       BannerURL: "https://via.placeholder.com/400x300"
-        //     }
-        //   ],
-        //   productSaleFunds: [
-        //     {
-        //       id: 'sample3',
-        //       FundID: 3,
-        //       FundName: "Bán hàng gây quỹ cho trẻ em nghèo (Dữ liệu mẫu)",
-        //       StartDate: { seconds: Date.now()/1000, nanoseconds: 0 },
-        //       EndDate: { seconds: Date.now()/1000 + 45*24*60*60, nanoseconds: 0 },
-        //       TargetAmount: 60000000,
-        //       CurrentAmount: 15000000,
-        //       Status: "Đang diễn ra",
-        //       Type: "Gây quỹ bằng bán đồ",
-        //       BannerURL: "https://via.placeholder.com/400x300"
-        //     }
-        //   ],
-        //   items: [
-        //     {
-        //       id: 'sample1',
-        //       ItemID: 1,
-        //       FundID: 1,
-        //       ItemCategory: "Sách giáo khoa",
-        //       PhotoURL: "https://via.placeholder.com/150",
-        //       Quantity: 50,
-        //       DonorID: 201,
-        //       DonatedAt: { seconds: Date.now()/1000, nanoseconds: 0 }
-        //     }
-        //   ],
-        //   transactions: []
-        // };
-        // setFundsData(sampleData);
-        // setLoading(false);
+        setLoading(false);
       }
     };
 
@@ -184,14 +125,14 @@ const FundHomePage = () => {
 
   // Navigation handlers
   const handleFundClick = (fundId) => {
-  if (!fundId) {
-    console.error("Fund ID is missing or invalid:", fundId);
-    alert("Không tìm thấy ID của quỹ");
-    return;
-  }
-  console.log("Navigating to fund detail page with ID:", fundId);
-  navigate(`/fund-detail-page/${fundId}`);
-};
+    if (!fundId) {
+      console.error("Fund ID is missing or invalid:", fundId);
+      alert("Không tìm thấy ID của quỹ");
+      return;
+    }
+    console.log("Navigating to fund detail page with ID:", fundId);
+    navigate(`/fund-detail-page/${fundId}`);
+  };
 
   const handleDonation = (fund, e) => {
     e.stopPropagation(); // Ngăn sự kiện nổi bọt
@@ -199,8 +140,28 @@ const FundHomePage = () => {
     alert(`Bạn sẽ quyên góp cho quỹ: ${fund.FundName}`);
   };
 
-  const handleItemClick = (id) => {
-    navigate(`/item-detail-page/${id}`);
+  // CẤU HÌNH LẠI: Xử lý khi nhấp vào vật phẩm, sẽ chuyển đến trang chi tiết quỹ tương ứng
+  const handleItemClick = (item) => {
+    if (!item || !item.FundID) {
+      console.error("Item doesn't have a valid FundID:", item);
+      alert("Không tìm thấy quỹ liên quan đến vật phẩm này");
+      return;
+    }
+    
+    // Tìm fund dựa vào FundID trong item
+    const relatedFund = fundsData.allFunds.find(fund => 
+      fund.FundID === item.FundID || 
+      fund.id === item.FundID.toString()
+    );
+    
+    if (relatedFund) {
+      console.log("Navigating to related fund:", relatedFund.FundName, "with ID:", relatedFund.id);
+      navigate(`/fund-detail-page/${relatedFund.id}`);
+    } else {
+      // Nếu không tìm thấy trong danh sách đã có, chuyển hướng trực tiếp bằng FundID
+      console.log("Fund not found in current list, navigating directly using FundID:", item.FundID);
+      navigate(`/fund-detail-page/${item.FundID}`);
+    }
   };
 
   const handleTransactionClick = (id) => {
@@ -249,21 +210,21 @@ const FundHomePage = () => {
           </div>
         </div>
         <div className="flex mt-4 gap-2">
-          <button 
-  className="flex-1 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
-  onClick={(e) => {
-    e.stopPropagation();
-    if (!fund.id) {
-      e.preventDefault();
-      alert("Không tìm thấy ID của quỹ");
-      return;
-    }
-    handleFundClick(fund.id);
-  }}
->
-  Xem chi tiết
-</button>
-          <button 
+          <button
+            className="flex-1 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!fund.id) {
+                e.preventDefault();
+                alert("Không tìm thấy ID của quỹ");
+                return;
+              }
+              handleFundClick(fund.id);
+            }}
+          >
+            Xem chi tiết
+          </button>
+          <button
             className="flex-1 bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition"
             onClick={(e) => handleDonation(fund, e)}
           >
@@ -281,7 +242,7 @@ const FundHomePage = () => {
       className="bg-white p-6 rounded-xl shadow-lg"
       whileHover={{ scale: 1.05 }}
       transition={{ type: "spring", stiffness: 200, damping: 15 }}
-      onClick={() => handleItemClick(item.id)}
+      onClick={() => handleItemClick(item)} // Truyền toàn bộ item thay vì chỉ ID
     >
       <div className="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -297,16 +258,17 @@ const FundHomePage = () => {
       <div className="mt-2 text-gray-600 text-center">
         <p>Số lượng: {item.Quantity}</p>
         <p>Ngày quyên góp: {formatDate(item.DonatedAt)}</p>
+        
       </div>
       <div className="flex mt-4 gap-2">
-        <button 
+        <button
           className="flex-1 bg-purple-600 text-white py-2 rounded-md hover:bg-purple-700 transition"
           onClick={(e) => {
             e.stopPropagation();
-            handleItemClick(item.id);
+            handleItemClick(item); // Truyền toàn bộ item
           }}
         >
-          Xem chi tiết
+          Xem quỹ liên quan
         </button>
       </div>
     </motion.div>
@@ -338,18 +300,8 @@ const FundHomePage = () => {
       <p className="mt-2 text-xl font-bold text-green-600">
         {formatCurrency(transaction.Amount)}
       </p>
-      {/* {transaction.ProofURL && (
-        <div className="mt-2">
-          <p className="text-sm text-gray-500">Bằng chứng thanh toán:</p>
-          <img 
-            src={transaction.ProofURL} 
-            alt="Proof" 
-            className="mt-1 w-full h-20 object-cover rounded-md" 
-          />
-        </div>
-      )} */}
       <div className="flex mt-4">
-        <button 
+        <button
           className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
           onClick={(e) => {
             e.stopPropagation();
@@ -373,17 +325,6 @@ const FundHomePage = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      {/* Thông tin debug */}
-      <div className="p-4 bg-yellow-100 border border-yellow-400 rounded mt-4 mx-4">
-        <h3 className="font-bold">Thông tin debug (chỉ hiển thị khi test):</h3>
-        <p>Trạng thái đăng nhập: {user ? `Đã đăng nhập (${user.uid})` : 'Chưa đăng nhập'}</p>
-        <p>Chiến dịch gây quỹ (Gây quỹ bằng tiền): {fundsData.fundraisingCampaigns.length}</p>
-        <p>Chiến dịch quyên góp (Tất cả các quỹ): {fundsData.allFunds.length}</p>
-        <p>Gây quỹ bằng bán đồ: {fundsData.productSaleFunds.length}</p>
-        <p>Vật phẩm quyên góp: {fundsData.items.length}</p>
-        <p>Giao dịch quyên góp: {fundsData.transactions.length}</p>
-      </div>
-
       {/* Hero Section */}
       <section className="py-8 bg-white shadow-md">
         <div className="container mx-auto px-4">
@@ -398,7 +339,7 @@ const FundHomePage = () => {
               <h2 className="font-bold">Chiến dịch gây quỹ</h2>
               <p className="text-sm text-gray-600">Quyên góp tiền mặt</p>
             </div>
-            
+
             <div className="bg-green-50 p-4 rounded-lg text-center cursor-pointer hover:bg-green-100 transition">
               <div className="bg-green-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -408,7 +349,7 @@ const FundHomePage = () => {
               <h2 className="font-bold">Chiến dịch quyên góp</h2>
               <p className="text-sm text-gray-600">Tất cả các quỹ</p>
             </div>
-            
+
             <div className="bg-yellow-50 p-4 rounded-lg text-center cursor-pointer hover:bg-yellow-100 transition">
               <div className="bg-yellow-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -428,7 +369,7 @@ const FundHomePage = () => {
               <h2 className="font-bold">Vật phẩm quyên góp</h2>
               <p className="text-sm text-gray-600">Quyên góp đồ vật</p>
             </div>
-            
+
             <div className="bg-red-50 p-4 rounded-lg text-center cursor-pointer hover:bg-red-100 transition">
               <div className="bg-red-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -523,7 +464,7 @@ const FundHomePage = () => {
           ) : (
             <div className="bg-white p-6 rounded-lg text-center">
               <p className="text-gray-600">Vui lòng đăng nhập để xem giao dịch quyên góp</p>
-              <button 
+              <button
                 className="mt-3 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
                 onClick={() => navigate('/login')}
               >

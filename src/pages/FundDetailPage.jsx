@@ -11,9 +11,10 @@ import {
   getDocs,
   orderBy,
   limit,
-  serverTimestamp  // Thêm serverTimestamp để đảm bảo định dạng thời gian chính xác
+  serverTimestamp
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { VietQR } from "vietqr"; // Import VietQR
 
 const FundDetailPage = () => {
   const { fundId } = useParams();
@@ -31,20 +32,18 @@ const FundDetailPage = () => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("info");
 
+  // New state variables for QR code
+  const [qrCodeBase64, setQrCodeBase64] = useState("");
+  const [showQRCode, setShowQRCode] = useState(false);
+
+  // VietQR setup
+  const vietQR = new VietQR({
+    clientID: 'de8a0804-a76d-41e5-8ad6-31503ce7d5f4',
+    apiKey: '17c29f09-4ea2-4417-b9c2-7f020d35de42',
+  });
+
   // Debugging - Log params để xác nhận ID đúng
   console.log("Fund ID from URL:", fundId);
-
-  useEffect(() => {
-    const fetchFundRelatedData = async () => {
-      try {
-        // Lấy danh sách các quỹ liên quan - Chỉ cần lấy 3 quỹ gần nhất
-        
-      } catch (error) {
-        console.error("Error fetching related funds:", error);
-      }
-    }
-    fetchFundRelatedData();
-  }, []);
 
   useEffect(() => {
     const fetchFundDetail = async () => {
@@ -154,6 +153,54 @@ const FundDetailPage = () => {
     fetchFundDetail();
   }, [fundId]);
 
+  // Thay thế hàm generateQRCode hiện tại bằng phiên bản sau
+  const generateQRCode = async () => {
+    try {
+      const cleanedAmount = donationAmount.replace(/[^\d]/g, '');
+      const amountInt = parseInt(cleanedAmount, 10);
+
+      if (!amountInt || amountInt < 1000) {
+        alert("Vui lòng nhập số tiền quyên góp tối thiểu 1.000 VNĐ");
+        return;
+      }
+
+      // Tạo payload với các trường bắt buộc
+      const payload = {
+        accountNo: "113366668888",
+        accountName: "QUY VAC XIN PHONG CHONG COVID",
+        acqId: "970415",
+        addInfo: `QuyID: ${fundId}`,
+        amount: amountInt,
+        template: "compact"
+      };
+
+      // Kiểm tra payload trước khi gửi
+      if (!payload.accountNo || !payload.acqId) {
+        throw new Error("Thiếu thông tin tài khoản ngân hàng");
+      }
+
+      console.log("Payload gửi lên VietQR:", payload);
+
+      // Gọi API VietQR
+      const result = await vietQR.genQRCodeBase64(payload);
+
+      console.log("VietQR response:", result);
+
+      // Kiểm tra response có đúng cấu trúc không
+      if (!result || !result.data || result.data.code !== "00") {
+        console.error("Lỗi khi tạo QR:", result);
+        throw new Error(result.data?.desc || "Không thể tạo mã QR. Vui lòng thử lại sau.");
+      }
+
+      // Lấy QR code từ data.qrDataURL
+      setQrCodeBase64(result.data.qrDataURL);
+      setShowQRCode(true);
+    } catch (error) {
+      console.error("Lỗi tạo mã QR:", error);
+      alert(error.message || "Không thể tạo mã QR. Vui lòng thử lại sau.");
+    }
+  };
+
   const handleTransferProofUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -208,6 +255,8 @@ const FundDetailPage = () => {
       setDonationAmount("");
       setTransferProof(null);
       setTransferProofFile(null);
+      setShowQRCode(false);
+      setQrCodeBase64("");
 
       // Làm mới dữ liệu giao dịch
       try {
@@ -389,8 +438,8 @@ const FundDetailPage = () => {
         <div className="flex border-b border-gray-200 overflow-x-auto">
           <button
             className={`py-3 px-6 whitespace-nowrap ${activeTab === "info"
-                ? "border-b-2 border-blue-500 text-blue-500"
-                : "text-gray-600 hover:text-blue-500"
+              ? "border-b-2 border-blue-500 text-blue-500"
+              : "text-gray-600 hover:text-blue-500"
               }`}
             onClick={() => setActiveTab("info")}
           >
@@ -398,17 +447,17 @@ const FundDetailPage = () => {
           </button>
           <button
             className={`py-3 px-6 whitespace-nowrap ${activeTab === "items"
-                ? "border-b-2 border-blue-500 text-blue-500"
-                : "text-gray-600 hover:text-blue-500"
+              ? "border-b-2 border-blue-500 text-blue-500"
+              : "text-gray-600 hover:text-blue-500"
               }`}
             onClick={() => setActiveTab("items")}
           >
-            Vật phẩm quyên góp
+            Quyên góp vật phẩm
           </button>
           <button
             className={`py-3 px-6 whitespace-nowrap ${activeTab === "transactions"
-                ? "border-b-2 border-blue-500 text-blue-500"
-                : "text-gray-600 hover:text-blue-500"
+              ? "border-b-2 border-blue-500 text-blue-500"
+              : "text-gray-600 hover:text-blue-500"
               }`}
             onClick={() => setActiveTab("transactions")}
           >
@@ -416,8 +465,8 @@ const FundDetailPage = () => {
           </button>
           <button
             className={`py-3 px-6 whitespace-nowrap ${activeTab === "donate"
-                ? "border-b-2 border-blue-500 text-blue-500"
-                : "text-gray-600 hover:text-blue-500"
+              ? "border-b-2 border-blue-500 text-blue-500"
+              : "text-gray-600 hover:text-blue-500"
               }`}
             onClick={() => setActiveTab("donate")}
           >
@@ -446,7 +495,7 @@ const FundDetailPage = () => {
                   <ul className="list-disc pl-5 mt-2">
                     <li className="text-gray-700">Email: support@quytuthien.vn</li>
                     <li className="text-gray-700">Hotline: 1900 1234</li>
-                    <li className="text-gray-700">Văn phòng: 123 Đường ABC, Quận XYZ, Hà Nội</li>
+                    <li className="text-gray-700">Văn phòng: 144 Xuan Thuy, Quận Cau Giay, Hà Nội</li>
                   </ul>
                 </div>
               </div>
@@ -457,7 +506,7 @@ const FundDetailPage = () => {
         {/* Items Tab */}
         {activeTab === "items" && (
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Vật phẩm quyên góp</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Quyên góp vật phẩm</h2>
             {relatedItems.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {relatedItems.map((item) => (
@@ -484,14 +533,41 @@ const FundDetailPage = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-600">Chưa có vật phẩm nào được quyên góp cho quỹ này</p>
-                <button
-                  className="mt-4 bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 transition"
-                  onClick={() => setActiveTab("donate")}
-                >
-                  Quyên góp ngay
-                </button>
+              <div className="bg-white p-6 rounded-lg shadow-md text-gray-800 leading-relaxed">
+                <h2 className="text-2xl font-bold mb-4">Hướng dẫn quyên góp vật phẩm cho quỹ</h2>
+                <p className="mb-4">
+                  Nếu bạn có nhu cầu quyên góp sách, đồ dùng học tập, quần áo hoặc các vật phẩm khác để ủng hộ các chiến dịch gây quỹ,
+                  bạn có thể thực hiện theo hai cách sau:
+                </p>
+
+                <ol className="list-decimal pl-5 space-y-3">
+                  <li>
+                    <strong>Đến trực tiếp văn phòng tiếp nhận</strong>
+                    <p>
+                      Vui lòng mang vật phẩm đến địa chỉ:
+                      <br />
+                      <span className="block font-medium">Văn phòng Quỹ Từ Thiện UET</span>
+                      <span className="block">144 Xuan Thuy, Quận Cau Giay, Hà Nội</span>
+                      <span className="block italic">Thời gian tiếp nhận: Thứ Hai - Thứ Sáu, từ 8h00 đến 17h00</span>
+                    </p>
+                  </li>
+
+                  <li>
+                    <strong>Liên hệ với quản trị viên</strong>
+                    <p>
+                      Nếu bạn không tiện đến trực tiếp, vui lòng liên hệ quản trị viên để được hướng dẫn cách gửi vật phẩm:
+                    </p>
+                    <ul className="list-disc pl-5 mt-2">
+                      <li>📧 <strong>Email:</strong> support@quytuthien.vn</li>
+                      <li>📞 <strong>Hotline:</strong> 1900 1234</li>
+                      <li>💬 <strong>Zalo/Message:</strong> (Số điện thoại quản trị viên)</li>
+                    </ul>
+                  </li>
+                </ol>
+
+                <p className="mt-6 text-gray-700">
+                  Chúng tôi rất trân trọng tấm lòng của bạn và sẽ cập nhật thông tin quyên góp sau khi tiếp nhận vật phẩm thành công.
+                </p>
               </div>
             )}
           </div>
@@ -526,8 +602,8 @@ const FundDetailPage = () => {
                           </td>
                           <td className="py-3 px-6 text-center">
                             <span className={`px-2 py-1 rounded-full text-xs ${transaction.IsVerified
-                                ? "bg-green-100 text-green-800"
-                                : "bg-yellow-100 text-yellow-800"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-yellow-100 text-yellow-800"
                               }`}>
                               {transaction.IsVerified ? "Đã xác minh" : "Chờ xác minh"}
                             </span>
@@ -574,7 +650,7 @@ const FundDetailPage = () => {
           </div>
         )}
 
-        {/* Donate Tab */}
+        {/* Donate Tab - Cập nhật với VietQR */}
         {activeTab === "donate" && (
           <div>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Quyên góp cho quỹ</h2>
@@ -602,22 +678,43 @@ const FundDetailPage = () => {
                   <p className="mt-1 text-sm text-gray-500">Số tiền tối thiểu 1.000 VNĐ</p>
                 </div>
 
-                <div>
-                  <label htmlFor="transferInfo" className="block text-gray-700 font-medium mb-2">
-                    Thông tin chuyển khoản
-                  </label>
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <p className="text-gray-700">Vui lòng chuyển khoản theo thông tin dưới đây:</p>
-                    <ul className="list-disc pl-5 mt-2 space-y-1">
-                      <li className="text-gray-700"><strong>Ngân hàng:</strong> TP Bank</li>
-                      <li className="text-gray-700"><strong>Số tài khoản:</strong> 27316062004</li>
-                      <li className="text-gray-700"><strong>Chủ tài khoản:</strong> Quỹ từ thiện XYZ</li>
-                      <li className="text-gray-700"><strong>Nội dung CK:</strong> {displayFund.FundName} - {auth.currentUser.uid}</li>
-                    </ul>
-                  </div>
+                {/* Nút tạo mã QR */}
+                <div className="flex justify-center">
+                  <button
+                    type="button"
+                    className="bg-blue-500 text-white py-2 px-6 rounded-lg font-semibold hover:bg-blue-600 transition"
+                    onClick={generateQRCode}
+                  >
+                    Tạo mã QR để chuyển khoản
+                  </button>
                 </div>
 
-                <div>
+                {/* Hiển thị mã QR khi đã tạo */}
+                {showQRCode && qrCodeBase64 && (
+                  <div className="mt-6 text-center">
+                    <h3 className="text-xl font-semibold text-gray-800 mb-4">Mã QR chuyển khoản</h3>
+                    <div className="bg-white p-4 rounded-lg shadow-md inline-block">
+                      <img
+                        src={qrCodeBase64}
+                        alt="QR Code"
+                        className="mx-auto"
+                      />
+                    </div>
+                    <div className="mt-4 bg-blue-50 p-4 rounded-lg text-left">
+                      <p className="text-gray-700"><strong>Thông tin chuyển khoản:</strong></p>
+                      <ul className="list-disc pl-5 mt-1 space-y-1">
+                        <li className="text-gray-700"><strong>Ngân hàng:</strong> TP Bank</li>
+                        <li className="text-gray-700"><strong>Số tài khoản:</strong> 27316062004</li>
+                        <li className="text-gray-700"><strong>Chủ tài khoản:</strong> Quỹ từ thiện XYZ</li>
+                        <li className="text-gray-700"><strong>Nội dung CK:</strong> {displayFund.FundName} - {auth.currentUser.uid}</li>
+                      </ul>
+                      <p className="mt-2 text-sm text-blue-600">Quét mã QR hoặc chuyển khoản thủ công theo thông tin trên</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Form upload minh chứng */}
+                <div className="mt-6">
                   <label htmlFor="transferProof" className="block text-gray-700 font-medium mb-2">
                     Minh chứng chuyển khoản
                   </label>
@@ -632,6 +729,7 @@ const FundDetailPage = () => {
                   <p className="mt-1 text-sm text-gray-500">Tải lên ảnh chụp màn hình xác nhận chuyển khoản</p>
                 </div>
 
+                {/* Hiển thị ảnh minh chứng */}
                 {transferProof && (
                   <div className="mt-4">
                     <p className="text-gray-700 font-medium mb-2">Xem trước ảnh minh chứng:</p>
@@ -643,6 +741,7 @@ const FundDetailPage = () => {
                   </div>
                 )}
 
+                {/* Nút submit quyên góp */}
                 <div className="flex justify-center pt-4">
                   <button
                     type="submit"
@@ -676,11 +775,11 @@ const FundDetailPage = () => {
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
             <img
               className="h-48 w-full object-cover"
-              src="https://via.placeholder.com/300x200?text=Related+Fund+1"
+              src="https://i.pinimg.com/736x/18/37/d6/1837d62b24f71016365c97ae4df12c0a.jpg"
               alt="Related Fund 1"
             />
             <div className="p-4">
-              <h3 className="font-semibold text-lg">Quỹ học bổng cho học sinh</h3>
+              <h3 className="font-semibold text-lg">Hỗ trợ học sinh vùng lũ Quảng Bình</h3>
               <p className="text-sm text-gray-600 mt-1">Kết thúc: 31/12/2025</p>
               <div className="mt-3">
                 <div className="bg-gray-200 h-2 rounded-full">
@@ -697,7 +796,7 @@ const FundDetailPage = () => {
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
             <img
               className="h-48 w-full object-cover"
-              src="https://via.placeholder.com/300x200?text=Related+Fund+2"
+              src="https://i.pinimg.com/736x/18/37/d6/1837d62b24f71016365c97ae4df12c0a.jpg"
               alt="Related Fund 2"
             />
             <div className="p-4">
@@ -718,7 +817,7 @@ const FundDetailPage = () => {
           <div className="bg-white rounded-xl shadow-md overflow-hidden">
             <img
               className="h-48 w-full object-cover"
-              src="https://via.placeholder.com/300x200?text=Related+Fund+3"
+              src="https://i.pinimg.com/736x/18/07/a8/1807a87696737ba4f6f5ee0f25d87b85.jpg"
               alt="Related Fund 3"
             />
             <div className="p-4">
@@ -753,7 +852,7 @@ const FundDetailPage = () => {
           </button>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
