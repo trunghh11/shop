@@ -1,67 +1,53 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-   match /users/{userId} {
-     allow read: if request.auth != null; // Allow all authenticated users to view user profiles
-     allow write: if request.auth != null && request.auth.uid == userId;
-   }
-
-   match /products/{productId} {
-     allow read: if true;
-     allow create: if request.auth != null; // Allow authenticated users to create new products
-     allow update: if request.auth != null && 
+    // USER RULES
+    match /users/{userId} {
+      allow read: if request.auth != null; // Allow all authenticated users to view user profiles
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    // PRODUCT RULES
+    match /products/{productId} {
+      allow read: if true;
+      allow create: if request.auth != null; // Allow authenticated users to create new products
+      allow update: if request.auth != null && 
                    (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userRole == 'Admin' || 
-                    request.auth.uid == resource.data.PosterID) && 
-                   (request.resource.data.keys().hasOnly(['Price', 'Stock']) || 
-                    get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userRole == 'Admin'); // Allow users to update Price and Stock of their own products
-     allow delete: if request.auth != null && 
+                    request.auth.uid == resource.data.PosterID);
+      allow delete: if request.auth != null && 
                    get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userRole == 'Admin';
-<<<<<<< HEAD
-   }
-
-   match /categories/{categoryId} {
-     allow read: if true; // Allow all users to read categories
-=======
->>>>>>> origin/lmt
-   }
-
-   match /users/{userId}/cart/{cartItemId} {
-     allow read, write: if request.auth != null && request.auth.uid == userId;
-   }
-
-   match /products/{productId}/reviews/{reviewId} {
-     allow read: if true;
-     allow create: if request.auth != null;
-     allow update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
-   }
-
-   match /post/{postId} {
+    }
+    // POST RULES
+    match /post/{postId} {
       allow read: if request.auth != null; // Allow all authenticated users to view posts
       allow create: if request.auth != null && request.auth.uid == request.resource.data.PosterID; // Allow users to create posts
-      allow delete: if request.auth != null && request.auth.uid == resource.data.PosterID; // Allow users to update/delete their own posts
-   }
-   
+      allow update: if request.auth != null && (
+        request.auth.uid == resource.data.PosterID || // Allow users to update their own posts
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userRole == 'Admin' // Allow admins to update posts
+      );
+      allow delete: if request.auth != null && request.auth.uid == resource.data.PosterID; // Allow users to delete their own posts
+    }
+    
+    // FUND RULES
     match /fund/{fundId} {
       allow read: if true;  
     }
     
-    match /fund_transaction/{transactionId} {
-      // Allow read access to all authenticated users
-      allow read: if request.auth != null;
-      
-      // Allow write access to authenticated users
-      // You can restrict this further based on the user's role, fund, etc.
-      allow create: if request.auth != null;  // Any authenticated user can create a donation
-      allow update: if request.auth != null && request.auth.data.userId == resource.data.DonorID; // Only the donor can update their transaction
-      allow delete: if request.auth != null && request.auth.data.userId == resource.data.DonorID; // Only the donor can delete their own transaction
+    // FUND CAMPAIGN RULES (THÊM MỚI)
+    match /fund_campaign/{campaignId} {
+      allow read: if true;  // Cho phép tất cả mọi người xem chiến dịch
     }
-
-    // EXCHANGE TRANSACTION RULES
-    match /exchangeTransactions/{transactionId} {
-      allow read: if request.auth != null; 
-      allow create: if request.auth != null;
-      allow update: if request.auth != null;  // Cho phép mọi người dùng đã xác thực cập nhật
+    
+    // DONATED ITEM RULES (THÊM MỚI)
+    match /donated_item/{itemId} {
+      allow read: if true;  // Cho phép tất cả mọi người xem vật phẩm quyên góp
+    }
+    
+    // FUND TRANSACTION RULES
+    match /fund_transaction/{transactionId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;  // Any authenticated user can create a donation
+      allow update: if request.auth != null && request.resource.data.DonorID == resource.data.DonorID; // Only the donor can update
+      allow delete: if request.auth != null && request.auth.uid == resource.data.DonorID; // Only the donor can delete
     }
     
     // NOTIFICATION RULES
@@ -70,10 +56,31 @@ service cloud.firestore {
       allow create: if request.auth != null;
       allow update: if request.auth != null && request.auth.uid == resource.data.uid;
     }
-
+    
+    // EXCHANGE TRANSACTION RULES - Thêm quy tắc cho phép cập nhật
+    match /exchangeTransactions/{transactionId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      // Cho phép cập nhật nếu người dùng là một trong hai bên trong giao dịch
+      allow update: if request.auth != null && (
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) && (
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.UserID == resource.data.User1ID || 
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.UserID == resource.data.User2ID
+        )
+      );
+    }
+    
     // SALE TRANSACTION RULES
     match /saleTransactions/{transactionId} {
-      allow read, write: if request.auth != null;
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      // Cho phép cập nhật nếu người dùng là người mua hoặc người bán
+      allow update: if request.auth != null && (
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) && (
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.UserID == resource.data.BuyerID || 
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.UserID == resource.data.SellerID
+        )
+      );
     }
   }
 }

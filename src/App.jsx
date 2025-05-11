@@ -29,6 +29,7 @@ import UserProfile from './pages/UserProfile';
 import Categories from "./pages/Categories";
 import CategoryProducts from "./pages/CategoryProducts";
 import FundHomePage from "./pages/FundHomePage";
+import FundDetailPage from "./pages/FundDetailPage";
 
 import ExchangeTransactionForm from './pages/ExchangeTransactionForm';
 import SaleTransactionForm from './pages/SaleTransactionForm';
@@ -89,6 +90,7 @@ function App() {
             } />
             <Route path="/checkout" element={<UnifiedCheckout />} />
             <Route path="/fund-home-page" element={<FundHomePage />} />
+            <Route path="/fund-detail-page/:fundId" element={<FundDetailPage />} />
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
