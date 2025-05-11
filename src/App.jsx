@@ -26,6 +26,10 @@ import PasswordReset from './pages/PasswordReset';
 import PostProduct from './pages/PostProduct';
 import MyPosts from './pages/MyPosts';
 import UserProfile from './pages/UserProfile';
+import Categories from "./pages/Categories";
+import CategoryProducts from "./pages/CategoryProducts";
+import FundHomePage from "./pages/FundHomePage";
+
 import ExchangeTransactionForm from './pages/ExchangeTransactionForm';
 import SaleTransactionForm from './pages/SaleTransactionForm';
 import NotificationItem from './components/Notification';
@@ -84,6 +88,7 @@ function App() {
               </ProtectedRoute>
             } />
             <Route path="/checkout" element={<UnifiedCheckout />} />
+            <Route path="/fund-home-page" element={<FundHomePage />} />
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
@@ -96,6 +101,8 @@ function App() {
             <Route path="/notification-list" element={<NotificationList />} />
             <Route path="/exchange-response/:exchangeId" element={<ExchangeResponsePage />} />            
             <Route path="/user/:userId" element={<UserProfile />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/category/:categoryId" element={<CategoryProducts />} />
           </Routes>
         </main>
         <Footer />

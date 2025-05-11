@@ -7,23 +7,22 @@ class User {
     UserID = 0,
     RatingCount = "",
     Phone = "",
-    Name = "",
+    FullName = "",
     FacebookLink = "",
     Email = "",
     Class = "",
     AvgRating = "",
-    notifications = []
+    notifications = [],
   }) {
     this.UserID = UserID; // Unique numeric identifier for the user
     this.RatingCount = RatingCount; // Count of ratings received by the user
     this.Phone = Phone; // User's phone number
-    this.Name = Name; // User's full name
+    this.FullName = FullName; // User's full FullName
     this.FacebookLink = FacebookLink; // Link to user's Facebook profile
     this.Email = Email; // User's email address
     this.Class = Class; // User's class or category
     this.AvgRating = AvgRating; // Average rating of the user
     this.notifications = notifications;
-
   }
 
   /**
@@ -34,7 +33,7 @@ class User {
       UserID: this.UserID,
       RatingCount: this.RatingCount,
       Phone: this.Phone,
-      Name: this.Name,
+      FullName: this.FullName,
       FacebookLink: this.FacebookLink,
       Email: this.Email,
       Class: this.Class,
@@ -48,7 +47,7 @@ class User {
   static fromJSON(data) {
     return new User({
       ...data,
-      UserID: Number(data.UserID) // Ensure UserID is a number
+      UserID: Number(data.UserID), // Ensure UserID is a number
     });
   }
 }

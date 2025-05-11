@@ -6,9 +6,10 @@ import {
   HomeIcon,
   TagIcon,
   // PhoneIcon,
-  UserCircleIcon,
   // ShoppingBagIcon,
   BookOpenIcon,
+  BanknotesIcon,
+  UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, db } from '../firebase/config';
@@ -78,10 +79,13 @@ export default function Navbar() {
 
   const navigation = [
     { name: 'Home', href: '/', icon: HomeIcon },
+    { name: 'Categories', href: '/categories', icon: TagIcon },
     // { name: 'Products', href: '/products', icon: TagIcon },
     // { name: 'Contact', href: '/contact', icon: PhoneIcon },
     { name: 'My Posts', href: '/myposts', icon: BookOpenIcon },
     { name: 'Post Product', href: '/post-product', icon: TagIcon },
+    { name: 'Fund', href: '/fund-home-page', icon: BanknotesIcon },
+ 
     { name: "Notifications", href: "/notification-list", icon: BookOpenIcon },
     { name: 'Exchange Transaction', href: '/create-exchange-transaction', icon: UserCircleIcon },
     { name: 'Sale Transaction', href: '/create-sale-transaction', icon: UserCircleIcon },
@@ -199,7 +203,10 @@ export default function Navbar() {
                       'flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200'
                     )}
                   >
-                    <item.icon className="h-5 w-5 mr-1.5" />
+                    {item.icon && (
+                      <item.icon className="h-5 w-5 mr-2" aria-hidden="true" />
+                    )}
+
                     {item.name}
                     {location.pathname === item.href && (
                       <motion.div

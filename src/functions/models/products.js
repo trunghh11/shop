@@ -13,7 +13,7 @@ class Product {
     ProductName = "",
     Stock = 0,
     image = [],
-    showOnHome = false
+    showOnHome = false,
   }) {
     this.CategoryID = CategoryID; // ID of the product category
     this.Condition = Condition; // Condition of the product (e.g., 'new', 'used')
@@ -54,7 +54,7 @@ class Product {
       Price: Number(data.Price), // Ensure Price is a number
       Stock: Number(data.Stock), // Ensure Stock is a number
       image: Array.isArray(data.image) ? data.image : [], // Ensure image is an array
-      showOnHome: Boolean(data.showOnHome) // Ensure showOnHome is a boolean
+      showOnHome: Boolean(data.showOnHome), // Ensure showOnHome is a boolean
     });
   }
 }

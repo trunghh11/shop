@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebase/config';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -21,6 +21,7 @@ function PostProduct() {
   });
   const [images, setImages] = useState({ image: null, image2: null, image3: null });
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
   const storage = getStorage();
 
@@ -31,6 +32,25 @@ function PostProduct() {
       navigate('/signin'); // Chuyển hướng đến trang đăng nhập
     }
   }, [user, navigate]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categoriesCol = collection(db, 'categories');
+        const categorySnapshot = await getDocs(categoriesCol);
+        const categoryList = categorySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setCategories(categoryList);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        toast.error('Failed to load categories.');
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,6 +70,12 @@ function PostProduct() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (product.Stock <= 0) {
+      toast.error("Stock phải lớn hơn 0!");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -62,7 +88,7 @@ function PostProduct() {
         CreatedAt: new Date(),
         PosterID: user.uid,
         ReviewerID: null,
-        Status: 'Pending',
+        Status: 'Đang xét duyệt',
       };
 
       const postsCol = collection(db, 'post');
@@ -131,15 +157,20 @@ function PostProduct() {
             required
             className="w-full p-3 border border-gray-300 rounded-lg"
           />
-          <input
-            type="text"
+          <select
             name="CategoryID"
             value={product.CategoryID}
             onChange={handleChange}
-            placeholder="Category ID"
             required
             className="w-full p-3 border border-gray-300 rounded-lg"
-          />
+          >
+            <option value="" disabled>Select a Category</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.CategoryName}
+              </option>
+            ))}
+          </select>
           <input
             type="text"
             name="Condition"
