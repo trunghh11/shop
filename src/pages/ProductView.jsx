@@ -173,6 +173,11 @@ function ProductView() {
                   >
                     {poster.FullName}
                   </Link>
+
+                  <p className="text-sm text-gray-600">
+  Đánh giá: <strong>{poster.AvgRating || 0}</strong> ⭐ ({poster.RatingCount || 0} đánh giá)
+</p>
+
                   <p className="text-sm text-gray-500">
                     Posted on {new Date(post.CreatedAt.seconds * 1000).toLocaleString()}
                   </p>

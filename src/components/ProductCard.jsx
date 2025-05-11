@@ -24,10 +24,12 @@ import PropTypes from 'prop-types';
  */
 function ProductCard({ 
   product, 
-  onAddToCart = () => {
-    console.warn('onAddToCart handler is not provided to ProductCard component');
-  }
+  onAddToCart = () => {}, 
+  posterRating = { avg: 0, count: 0 }
 }) {
+
+  console.log("📦 ProductCard:", product.ProductName);
+  console.log("⭐ Poster Rating:", posterRating);
   // const [user] = useAuthState(auth);
   const navigate = useNavigate();
   // const [showModal, setShowModal] = useState(false);
@@ -92,15 +94,15 @@ function ProductCard({
       y: 0,
       transition: {
         duration: 0.5,
-        ease: "easeOut"
+        ease: 'easeOut'
       }
     },
     hover: {
       y: -10,
-      boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
       transition: {
         duration: 0.3,
-        ease: "easeInOut"
+        ease: 'easeInOut'
       }
     }
   };
@@ -111,7 +113,7 @@ function ProductCard({
     animate: {
       scale: 1,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 500,
         damping: 25
       }
@@ -123,10 +125,10 @@ function ProductCard({
       <motion.div
         ref={ref}
         variants={cardVariants}
-        initial="hidden"
-        animate={inView ? "visible" : "hidden"}
-        whileHover="hover"
-        className="
+        initial='hidden'
+        animate={inView ? 'visible' : 'hidden'}
+        whileHover='hover'
+        className='
           relative
           bg-white
           rounded-2xl
@@ -142,17 +144,17 @@ function ProductCard({
           flex-col
           h-full
           cursor-pointer
-        "
+        '
         onClick={handleViewDetails}
       >
         {/* Product Badges - New Arrival and Discount */}
-        <div className="absolute top-4 left-4 z-10 flex flex-col gap-2">
+        <div className='absolute top-4 left-4 z-10 flex flex-col gap-2'>
           {product?.isNew && (
             <motion.div
               variants={badgeVariants}
-              initial="initial"
-              animate="animate"
-              className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg"
+              initial='initial'
+              animate='animate'
+              className='bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg'
             >
               New Arrival
             </motion.div>
@@ -160,9 +162,9 @@ function ProductCard({
           {(product?.OriginalPrice > product?.Price) && (
             <motion.div
               variants={badgeVariants}
-              initial="initial"
-              animate="animate"
-              className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg"
+              initial='initial'
+              animate='animate'
+              className='bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg'
             >
               {calculateDiscount(product?.OriginalPrice, product?.Price)}% OFF
             </motion.div>
@@ -170,7 +172,7 @@ function ProductCard({
         </div>
 
         {/* Product Image with View Details Overlay */}
-        <div className="relative h-[240px] overflow-hidden bg-gray-50">
+        <div className='relative h-[240px] overflow-hidden bg-gray-50'>
           <motion.img
             src={product?.image || '/placeholder-image.jpg'}
             alt={product?.ProductName || 'Product Image'}
@@ -178,9 +180,9 @@ function ProductCard({
           />
 
           {/* Overlay that appears on hover */}
-          <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center">
+          <div className='absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center'>
             <motion.div
-              className="bg-white text-blue-600 px-6 py-2 rounded-full font-medium flex items-center gap-2 shadow-lg"
+              className='bg-white text-blue-600 px-6 py-2 rounded-full font-medium flex items-center gap-2 shadow-lg'
               initial={{ y: 20, opacity: 0 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -200,7 +202,7 @@ function ProductCard({
         </div>
 
         {/* Product Information Section */}
-        <div className="flex flex-col flex-grow p-6">
+        <div className='flex flex-col flex-grow p-6'>
           {/* Product Title, Description & Category */}
           <div className="flex-grow">
             <h3 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors line-clamp-2">
@@ -209,13 +211,20 @@ function ProductCard({
             <p className="mt-2 text-sm text-gray-600 line-clamp-2">
               {product?.Description || 'No description available'}
             </p>
+            {posterRating && (
+  <p className="mt-2 text-sm text-yellow-700">
+    ⭐ <span className="font-medium">{posterRating.avg.toFixed(1)}</span> từ 
+    <span className="font-semibold text-blue-600 ml-1">{posterRating.count}</span> lượt đánh giá
+  </p>
+)}
+
             <div className="mt-2 text-sm text-gray-500">
               {product?.Type && <span className="inline-block">{product?.Type}</span>}
             </div>
           </div>
 
           {/* Bottom Section - Price, Stock Status and Action Buttons */}
-          <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className='mt-4 pt-4 border-t border-gray-100'>
             {/* Price and Stock Status */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-baseline gap-2">
@@ -239,7 +248,7 @@ function ProductCard({
             </div>
 
             {/* Action Buttons - View Product */}
-            <div className="flex gap-3">
+            <div className='flex gap-3'>
               {/* View Product Button */}
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -261,7 +270,7 @@ function ProductCard({
                   text-white
                 `}
               >
-                <Eye className="w-5 h-5" />
+                <Eye className='w-5 h-5' />
                 View Product
               </motion.button>
             </div>
@@ -284,6 +293,11 @@ ProductCard.propTypes = {
     Stock: PropTypes.number,
     isNew: PropTypes.bool,
     Type: PropTypes.string,
+    posterRating: PropTypes.shape({
+  avg: PropTypes.number,
+  count: PropTypes.number,
+}),
+
   }),
   onAddToCart: PropTypes.func
 };

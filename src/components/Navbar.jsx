@@ -11,6 +11,7 @@ import {
   BanknotesIcon,
   UserCircleIcon,
   BellIcon,
+  ClockIcon,
   ArrowPathRoundedSquareIcon,
   CurrencyDollarIcon,
   ArrowUpOnSquareStackIcon,
@@ -303,6 +304,21 @@ export default function Navbar() {
                               >
                                 <BellIcon className="mr-3 h-5 w-5 text-gray-400" />
                                 Notifications
+                              </Link>
+                            )}
+                          </Menu.Item>
+
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link
+                                to="/transaction-history"
+                                className={classNames(
+                                  active ? 'bg-gray-50' : '',
+                                  'flex items-center px-4 py-2 text-sm text-gray-700'
+                                )}
+                              >
+                                <ClockIcon className="mr-3 h-5 w-5 text-gray-400" />
+                                Transaction History
                               </Link>
                             )}
                           </Menu.Item>

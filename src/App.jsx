@@ -37,6 +37,7 @@ import NotificationItem from './components/Notification';
 import NotificationList from './pages/NotificationList';
 import ExchangeResponsePage from './pages/ExchangeResponsePage';
 import SaleResponsePage from './pages/SaleResponsePage';
+import TransactionHistory from "./pages/TransactionHistory";
 function App() {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
@@ -90,7 +91,7 @@ function App() {
             } />
             <Route path="/checkout" element={<UnifiedCheckout />} />
             <Route path="/fund-home-page" element={<FundHomePage />} />
-            <Route path="/fund/:id" element={<FundDetailPage />} />
+            <Route path="/fund-detail-page/:fundId" element={<FundDetailPage />} />
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
@@ -100,6 +101,7 @@ function App() {
             <Route path="/create-sale-transaction" element={<SaleTransactionForm />} />
             <Route path="/sale-response/:saleId" element={<SaleResponsePage />} />
             <Route path="/notifications" element={<NotificationItem />} />
+            <Route path="/transaction-history" element={<TransactionHistory />} />
             <Route path="/notification-list" element={<NotificationList />} />
             <Route path="/exchange-response/:exchangeId" element={<ExchangeResponsePage />} />            
             <Route path="/user/:userId" element={<UserProfile />} />
