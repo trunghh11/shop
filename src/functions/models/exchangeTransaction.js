@@ -9,7 +9,7 @@ export default class ExchangeTransaction {
     Quantity2 = "",
     Status = "pending",
     User1ID = "",
-    User2ID = ""
+    User2ID = "",
   }) {
     this.ExchangeID = ExchangeID;
     this.CreatedAt = CreatedAt;
@@ -34,12 +34,12 @@ export default class ExchangeTransaction {
       User1ID: this.User1ID,
       User2ID: this.User2ID,
     };
-  } 
+  }
 
   static fromJSON(data) {
     return new ExchangeTransaction({
       ...data,
-      CreatedAt: data.CreatedAt instanceof Date ? data.CreatedAt : new Date(data.CreatedAt)
+      CreatedAt: data.CreatedAt instanceof Date ? data.CreatedAt : new Date(data.CreatedAt),
     });
   }
 }

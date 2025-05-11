@@ -185,7 +185,7 @@ const ExchangeResponsePage = () => {
               <h3 className="text-lg font-semibold mb-3 text-blue-700">Người yêu cầu</h3>
               {user1Details ? (
                 <>
-                  <p className="mb-2"><span className="font-medium">Tên người dùng:</span> {user1Details.DisplayName || user1Details.UserID}</p>
+                  <p className="mb-2"><span className="font-medium">Tên người dùng:</span> {user1Details.FullName || user1Details.UserID}</p>
                   <p className="mb-2"><span className="font-medium">Email:</span> {user1Details.Email}</p>
                   <p className="mb-2"><span className="font-medium">Số điện thoại:</span> {user1Details.Phone || 'Không có thông tin'}</p>
                 </>
@@ -199,7 +199,7 @@ const ExchangeResponsePage = () => {
               <h3 className="text-lg font-semibold mb-3 text-blue-700">Người nhận yêu cầu</h3>
               {user2Details ? (
                 <>
-                  <p className="mb-2"><span className="font-medium">Tên người dùng:</span> {user2Details.DisplayName || user2Details.UserID}</p>
+                  <p className="mb-2"><span className="font-medium">Tên người dùng:</span> {user2Details.FullName || user2Details.UserID}</p>
                   <p className="mb-2"><span className="font-medium">Email:</span> {user2Details.Email}</p>
                   <p className="mb-2"><span className="font-medium">Số điện thoại:</span> {user2Details.Phone || 'Không có thông tin'}</p>
                 </>
@@ -221,12 +221,12 @@ const ExchangeResponsePage = () => {
                     {product1Details.ImageURL && (
                       <img 
                         src={product1Details.ImageURL} 
-                        alt={product1Details.Name} 
+                        alt={product1Details.ProductName} 
                         className="w-full h-48 object-cover rounded-md mb-2"
                       />
                     )}
                   </div>
-                  <p className="mb-2"><span className="font-medium">Tên sản phẩm:</span> {product1Details.Name}</p>
+                  <p className="mb-2"><span className="font-medium">Tên sản phẩm:</span> {product1Details.ProductName}</p>
                   <p className="mb-2"><span className="font-medium">Mô tả:</span> {product1Details.Description}</p>
                   <p className="mb-2"><span className="font-medium">Số lượng trao đổi:</span> {exchange.Quantity1}</p>
                   <p className="mb-2"><span className="font-medium">Tình trạng:</span> {product1Details.Condition}</p>
@@ -245,12 +245,12 @@ const ExchangeResponsePage = () => {
                     {product2Details.ImageURL && (
                       <img 
                         src={product2Details.ImageURL} 
-                        alt={product2Details.Name} 
+                        alt={product2Details.ProductName} 
                         className="w-full h-48 object-cover rounded-md mb-2"
                       />
                     )}
                   </div>
-                  <p className="mb-2"><span className="font-medium">Tên sản phẩm:</span> {product2Details.Name}</p>
+                  <p className="mb-2"><span className="font-medium">Tên sản phẩm:</span> {product2Details.ProductName}</p>
                   <p className="mb-2"><span className="font-medium">Mô tả:</span> {product2Details.Description}</p>
                   <p className="mb-2"><span className="font-medium">Số lượng trao đổi:</span> {exchange.Quantity2}</p>
                   <p className="mb-2"><span className="font-medium">Tình trạng:</span> {product2Details.Condition}</p>

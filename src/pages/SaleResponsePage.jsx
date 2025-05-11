@@ -272,12 +272,12 @@ const SaleResponsePage = () => {
                     {productDetails.image && (
                       <img 
                         src={productDetails.image} 
-                        alt={productDetails.Name} 
+                        alt={productDetails.ProductName} 
                         className="w-full h-48 object-cover rounded-md mb-2"
                       />
                     )}
                   </div>
-                  <p className="mb-2"><span className="font-medium">Tên sản phẩm:</span> {productDetails.Name}</p>
+                  <p className="mb-2"><span className="font-medium">Tên sản phẩm:</span> {productDetails.ProductName}</p>
                   <p className="mb-2"><span className="font-medium">Mô tả:</span> {productDetails.Description}</p>
                   <p className="mb-2"><span className="font-medium">Số lượng:</span> {saleTransaction.Quantity}</p>
                   <p className="mb-2"><span className="font-medium">Tình trạng:</span> {productDetails.Condition}</p>
@@ -339,7 +339,7 @@ const SaleResponsePage = () => {
                 <h3 className="text-lg font-semibold mb-3 text-blue-700">Thông tin người mua</h3>
                 {buyerDetails ? (
                   <>
-                    <p className="mb-2"><span className="font-medium">Tên:</span> {buyerDetails.DisplayName || buyerDetails.UserID}</p>
+                    <p className="mb-2"><span className="font-medium">Tên:</span> {buyerDetails.FullName || buyerDetails.UserID}</p>
                     <p className="mb-2"><span className="font-medium">Email:</span> {buyerDetails.Email}</p>
                     <p className="mb-2"><span className="font-medium">Số điện thoại:</span> {buyerDetails.Phone || 'Chưa cung cấp'}</p>
                   </>
@@ -353,7 +353,7 @@ const SaleResponsePage = () => {
                 <h3 className="text-lg font-semibold mb-3 text-blue-700">Thông tin người bán</h3>
                 {sellerDetails ? (
                   <>
-                    <p className="mb-2"><span className="font-medium">Tên:</span> {sellerDetails.DisplayName || sellerDetails.UserID}</p>
+                    <p className="mb-2"><span className="font-medium">Tên:</span> {sellerDetails.FullName || sellerDetails.UserID}</p>
                     <p className="mb-2"><span className="font-medium">Email:</span> {sellerDetails.Email}</p>
                     <p className="mb-2"><span className="font-medium">Số điện thoại:</span> {sellerDetails.Phone || 'Chưa cung cấp'}</p>
                   </>
