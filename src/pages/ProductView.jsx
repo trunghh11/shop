@@ -183,6 +183,9 @@ function ProductView() {
             {/* Product Details */}
             <h1 className="text-4xl font-bold mb-4 text-gray-900">{product.ProductName}</h1>
             <p className="text-gray-700 mb-4">
+              <strong>Mã sản phẩm:</strong> {product.id}
+            </p>
+            <p className="text-gray-700 mb-4">
               <strong>Post Content:</strong> {post?.Content}
             </p>
             <p className="text-gray-700 mb-4">

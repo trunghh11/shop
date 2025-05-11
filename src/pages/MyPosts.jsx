@@ -137,6 +137,10 @@ export default function MyPosts() {
                 >
                   Còn: {product.Stock > 0 ? `${product.Stock}` : 'Hết hàng'}
                 </p>
+
+                <p className="text-sm text-gray-500 mt-1">
+                  <span className="font-medium">Mã sản phẩm:</span> {product.id}
+                </p>
               </Link>
           
               {/* Nút Xóa và Chỉnh sửa */}

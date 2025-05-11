@@ -20,6 +20,16 @@ export const createSaleTransaction = async (formData) => {
     
     const productData = productSnap.data();
     
+
+        // THÊM KIỂM TRA SỐ LƯỢNG TỒN KHO
+    const requestedQuantity = Number(formData.Quantity) || 0;
+    const availableStock = Number(productData.Stock) || 0;
+    
+    if (requestedQuantity > availableStock) {
+      throw new Error(`Không đủ số lượng sản phẩm. Hiện chỉ còn ${availableStock} sản phẩm trong kho.`);
+    }
+
+    
     // Kiểm tra sản phẩm có PostID
     if (!productData.PostID) {
       throw new Error("Sản phẩm không liên kết với bài đăng nào");
@@ -220,22 +230,20 @@ export const updateSaleTransactionStatus = async (saleId, status) => {
           Type: "sale",
         });
       }
-
-  // Cập nhật số lượng tồn kho của sản phẩm
-  if (productSnap.exists()) {
-    const currentStock = productSnap.data().Stock;
-    const quantityToDeduct = transaction.Quantity;
-    
-    // Đảm bảo số lượng không thể âm
-    const newStock = Math.max(0, currentStock - quantityToDeduct);
-    
-    // Cập nhật Stock trong database
-    await updateDoc(productRef, {
-      Stock: newStock
-    });
-    
-    console.log(`Đã cập nhật số lượng tồn kho của sản phẩm ${transaction.ProductID} từ ${currentStock} thành ${newStock}`);
-  }
+        // Cập nhật số lượng tồn kho của sản phẩm
+        if (productSnap.exists()) {
+          const currentStock = productSnap.data().Stock;
+          const quantityToDeduct = transaction.Quantity;
+          
+          // Đảm bảo số lượng không thể âm
+          const newStock = Math.max(0, currentStock - quantityToDeduct);
+          
+          // Cập nhật Stock trong database
+          await updateDoc(productRef, {
+            Stock: newStock
+          });
+          console.log(`Đã cập nhật số lượng tồn kho của sản phẩm ${transaction.ProductID} từ ${currentStock} thành ${newStock}`);
+      }
 
     } else if (status === "cancelled") {
       // Thông báo người mua
