@@ -1,9 +1,9 @@
-# Admin Side (Separate Repo: [shopAdmin](https://github.com/itfeelsharsh/shopAdmin)):
+# Admin Side (Separate Repo: [shopAdmin](https://github.com/trunghh11/shopAdmin)):
  (made with React + Firebase no server deployment required, can-be hosted on CloudFlare pages, Vercel, Netlify, Firebase Hosting Etc.)
 
-# KamiKoto - Exquisite Japanese Stationery E-Commerce Web App
+# TSii - Buying, Selling, and Exchanging products in schools Web App
 
-Welcome to KamiKoto, a beautifully crafted e-commerce platform offering a seamless shopping experience for exquisite Japanese stationery. This project is built using **React.js** and **Firebase**, delivering a delightful UI/UX and mobile-friendly experience for all users.
+This project is built using **React.js** and **Firebase**, delivering a delightful UI/UX and mobile-friendly experience for all users.
 
 ---
 
@@ -19,19 +19,6 @@ Welcome to KamiKoto, a beautifully crafted e-commerce platform offering a seamle
 - **Shipping Details:** Enter shipping information for delivery.
 - **Mobile Friendly:** Responsive design for a smooth shopping experience across all devices.
 
-### Admin Side (Separate Repo: [shopAdmin](https://github.com/itfeelsharsh/shopAdmin)):
-
-- **Manage Users:** View user details (Profile Picture, Contact Info), ban users if necessary.
-- **Manage Products:** Add, edit, or delete products with detailed information such as:
-  - Product Name
-  - Description
-  - Price (₹)
-  - Brand, Stock, and Product Type
-  - Primary, Secondary, Tertiary Image URLs
-  - Option to feature the product on the homepage
-
----
-
 ## 🚀 Getting Started
 
 ### Setup & Installation
@@ -39,7 +26,7 @@ Welcome to KamiKoto, a beautifully crafted e-commerce platform offering a seamle
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/itfeelsharsh/kamikoto.git
+   git clone https://github.com/trunghh11/shop.git
    cd kamikoto
    ```
 
@@ -116,7 +103,7 @@ service cloud.firestore {
 
 ## ⚡️ Admin Panel Access
 
-To use the Admin Panel ([shopAdmin](https://github.com/itfeelsharsh/shopAdmin)):
+To use the Admin Panel ([shopAdmin](https://github.com/trunghh11/shopAdmin)):
 
 1. Register as a normal user.
 2. In the Firestore Console, find the user in the `users` collection and update their role:
